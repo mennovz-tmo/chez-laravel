@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,13 +12,22 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->string('number', 12)->unique();
-            $table->string('name', 16);
-            $table->string('phone_number');
+            $table->string('number');
+            $table->string('name');
             $table->integer('amount_of_people');
+            $table->string('phone_number');
+            $table->string('email');
+            $table->string('comment');
+            $table->date('date');
+            $table->time('arrival');
+            $table->time('departure');
+            $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('reservations');
