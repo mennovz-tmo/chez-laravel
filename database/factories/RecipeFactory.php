@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories\Models;
+namespace Database\Factories;
 
 use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,7 +20,7 @@ class RecipeFactory extends Factory
         return [
             'name' => fake()->name(),
             'description_short' => fake()->paragraph(2),
-            'allergens' => json_encode([fake()->word()]),
+            'allergens' => [fake()->word()],
             'price' => fake()->numberBetween(1, 35),
             'picture' => fake()->filePath(),
         ];

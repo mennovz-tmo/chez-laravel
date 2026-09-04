@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\RecipeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/test', function () {
-    return view('test');
-});
+Route::controller(RecipeController::class)
+    ->prefix('recipe')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::post('/create', 'create');
+    });

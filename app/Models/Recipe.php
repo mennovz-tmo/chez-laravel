@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Recipe extends Model
 {
     use HasFactory;
+
+    protected function casts(): array {
+        return [
+            'allergens' => 'array',
+            'price' => 'decimal',
+        ];
+    }
 }
