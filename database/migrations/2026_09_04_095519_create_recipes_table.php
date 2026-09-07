@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('description_short');
-            $table->json('allergens')->nullable();
+            $table->string('allergens');
             $table->decimal('price', 10, 2);
             $table->string('picture');
             $table->timestamps();

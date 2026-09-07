@@ -1,11 +1,7 @@
 @extends('layouts.page')
 
-@section('nav')
-    @extends('components.nav')
-@endsection
-
 @section('content')
-    <form action="/recipe/create" method="post" enctype="multipart/form-data">
+    <form action="create" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Naam van het recept:</label>
             <input type="text" class="form-control" id="name" name="name" value="Chazz Burger">
@@ -32,16 +28,4 @@
         @csrf
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-
-    @foreach ($recipes as $recipe)
-        @php
-            $name = $recipe['name'];
-            $picture = $recipe['picture'];
-        @endphp
-
-        <div class="g-col-4">
-            <p>{{ $name }}</p>
-            <img src="{{ $picture }}" alt="yess">
-        </div>
-    @endforeach
 @endsection

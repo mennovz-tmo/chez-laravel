@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         for ($i = 0; $i < 2; $i++) {
-            $this->call(RecipeSeeder::class);
+            // $this->call(RecipeSeeder::class);
             $this->call(ReservationSeeder::class);
         }
     }
