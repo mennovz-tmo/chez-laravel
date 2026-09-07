@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Menno',
-            'email' => 'menno@themindoffice.nl',
+            'name' => 'John Example',
+            'email' => 'mail@example.com',
         ]);
 
-        for ($i = 0; $i < 2; $i++) {
-            // $this->call(RecipeSeeder::class);
+        for ($i = 0; $i < 3; $i++) {
+            $this->call(RecipeSeeder::class);
             $this->call(ReservationSeeder::class);
         }
     }

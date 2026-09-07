@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Recipe;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RecipeSeeder extends Seeder
 {
     use WithoutModelEvents;
+
     /**
      * Run the database seeds.
      */
@@ -19,7 +20,7 @@ class RecipeSeeder extends Seeder
         Recipe::factory()->create([
             'name' => fake()->name(),
             'description_short' => fake()->paragraph(2),
-            'allergens' => json_encode([fake()->word()]),
+            'allergens' => fake()->word(),
             'price' => fake()->numberBetween(1, 35),
             'picture' => fake()->filePath(),
         ]);
