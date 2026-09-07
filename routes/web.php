@@ -29,6 +29,7 @@ Route::prefix('admin')
             ->group(function () {
                 Route::get('/add', 'index');
                 Route::post('/create', 'create');
+                Route::get('/delete', 'delete');
             });
     });
 

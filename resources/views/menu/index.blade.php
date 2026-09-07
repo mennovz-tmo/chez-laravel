@@ -22,6 +22,9 @@
                             {{ $description }} -- Allergenen: {{ $allergens }}
                         </p>
                         <a href="#" class="btn btn-primary">€{{ $price }}</a>
+                        @auth
+                            <a href="/admin/recipe/delete"></a>
+                        @endauth
                     </div>
                 </div>
             @endforeach

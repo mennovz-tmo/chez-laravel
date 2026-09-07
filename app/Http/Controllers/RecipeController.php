@@ -47,7 +47,11 @@ class RecipeController extends Controller
         return redirect('/admin/recipe/add');
     }
 
-    public function delete() {}
+    public function delete(Request $request) {
+        $validator = $request->validate([
+            
+        ]);
+    }
 
     public function menu()
     {
