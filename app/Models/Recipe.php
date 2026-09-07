@@ -9,10 +9,15 @@ class Recipe extends Model
 {
     use HasFactory;
 
-    protected function casts(): array {
+    protected $fillable = [
+        'name', 'description_short', 'allergens', 'price', 'picture'
+    ];
+
+    protected function casts(): array
+    {
         return [
             'allergens' => 'array',
-            'price' => 'decimal',
+            'price' => 'decimal:2',
         ];
     }
 }

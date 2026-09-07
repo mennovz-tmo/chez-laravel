@@ -1,11 +1,7 @@
 <?php
 
-use App\Http\RecipeController;
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 Route::controller(RecipeController::class)
     ->prefix('recipe')
@@ -13,3 +9,5 @@ Route::controller(RecipeController::class)
         Route::get('/', 'index');
         Route::post('/create', 'create');
     });
+
+    
