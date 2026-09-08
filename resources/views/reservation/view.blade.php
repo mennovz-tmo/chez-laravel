@@ -5,7 +5,7 @@
         <div class="mb-3">
             <label for="email" class="form-label">Wat is het emailadres van de reservering(en)?</label>
             <div class="row">
-                <input required type="text" class="col-8" id="email" name="email" placeholder="John Doe" value="{{ old('email') }}">
+                <input @guest required @endguest type="text" class="col-8" id="email" name="email" placeholder="John Doe" value="{{ old('email') }}">
                 <button type="submit" class="col-4 btn btn-primary">Zoek uw reservering</button>
             </div>
         </div>

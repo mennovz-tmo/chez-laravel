@@ -13,8 +13,14 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/menu">menu</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/reservation">reserveren</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        reservering opties
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/reservation">reservering maken</a></li>
+                        <li><a class="dropdown-item" href="/reservation/view">reservering bekijken</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
