@@ -47,4 +47,5 @@ Route::controller(ReservationController::class)
         Route::get('/view', 'view');
         Route::post('/view', 'view');
         Route::post('/create', 'create');
+        Route::get('/delete/{id}', 'delete')->middleware('auth');
     });

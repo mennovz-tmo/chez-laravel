@@ -28,7 +28,7 @@
 
             <div class="card mb-2 p-2">
                 <p>
-                    Reservering: {{ $number }} voor {{ $amount_of_people }} personen.
+                    Reservering: {{ $number }} ({{ $id }}) voor {{ $amount_of_people }} personen.
                 </p>
                 <p>
                     Telefoon nummer: {{ $phone_number }}

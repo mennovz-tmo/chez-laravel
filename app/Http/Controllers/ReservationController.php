@@ -11,6 +11,18 @@ use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
+    public function delete($id)
+    {
+        $reservation_to_delete = Reservation::find($id);
+        if ($reservation_to_delete != null) {
+            Reservation::find($id)->delete();
+
+            return redirect('/reservation/view')->with('success', 'De reservering is verwijderd');
+        } else {
+            return redirect('/reservation/view')->withErrors('De reservering die verwijderd zou worden bestaat niet!');
+        }
+    }
+
     public function index()
     {
         return view('reservation.create');
