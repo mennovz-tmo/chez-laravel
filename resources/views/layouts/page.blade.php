@@ -6,9 +6,9 @@
 <body class="d-flex flex-column h-100">
     @include('components.nav')
 
-    <main class="container flex-shrink-0">
+    <div class="container">
         @if ($errors->any())
-            <div class="alert alert-danger">
+            <div class="m-2 alert alert-danger">
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -16,14 +16,14 @@
                 </ul>
             </div>
         @elseif (Session::has('success'))
-            <div class="alert alert-success">
+            <div class="m-2 alert alert-success">
                 {{ Session::get('success') }}
             </div>
         @endif
+    </div>
 
-        <div class="grid content">
-            @yield('content')
-        </div>
+    <main class="container grid">
+        @yield('content')
     </main>
 </body>
 

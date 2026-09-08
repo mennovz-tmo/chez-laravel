@@ -22,9 +22,11 @@
                         <p class="card-text">
                             {{ $description }} -- Allergenen: {{ $allergens }}
                         </p>
-                        <a href="#" class="btn btn-primary">€{{ $price }}</a>
                         @auth
-                            <a href="/admin/recipe/delete/{{ $id }}" class="btn btn-danger">Verwijderen van menu</a>
+                            <div class="d-grid gap-2 d-flex justify-content-end">
+                                <a href="#" class="btn btn-primary">€{{ $price }}</a>
+                                <a href="/admin/recipe/delete/{{ $id }}" class="btn btn-danger">Verwijderen van menu</a>
+                            </div>
                         @endauth
                     </div>
                 </div>

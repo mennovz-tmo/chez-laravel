@@ -44,5 +44,7 @@ Route::controller(ReservationController::class)
     ->prefix('reservation')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/view', 'view');
+        Route::post('/view', 'view');
         Route::post('/create', 'create');
     });

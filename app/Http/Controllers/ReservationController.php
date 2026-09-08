@@ -15,6 +15,23 @@ class ReservationController extends Controller
         return view('reservation.create');
     }
 
+    public function view(Request $request)
+    {
+        if (! $request->isMethod('POST')) {
+            return view('reservation.view');
+        }
+
+        $validator = $request->validate([
+            'email' => ['required', 'email', 'min:5'],
+        ]);
+
+        // $reservation_details = Reservation::select('*')->where('email', '=', $request->input('email'));
+        $reservation_details = json_decode(json_encode(DB::select('select * from reservations where email = ? order by date desc, arrival desc limit 10', [$request->input('email')])), true);
+        // dd($reservation_details);
+
+        return view('reservation.view')->with('reserveringen', $reservation_details)->with('email', $request->input('email'));
+    }
+
     public function create(Request $request)
     {
         // dd($request->input('date'));
