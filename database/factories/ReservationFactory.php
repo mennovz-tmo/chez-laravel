@@ -18,15 +18,15 @@ class ReservationFactory extends Factory
     public function definition(): array
     {
         return [
-            "number" => generate_reservation_number(),
-            "name" => fake()->name(),
-            "amount_of_people" => fake()->numberBetween(1, 16),
-            "phone_number" => fake()->phoneNumber(),
-            "email" => fake()->safeEmail(),
-            "comment" => fake()->sentence(),
-            "date" => fake()->date(),
-            "arrival" => fake()->time(),
-            "departure" => fake()->time(),
+            'number' => generate_reservation_number(),
+            'name' => fake()->name(),
+            'amount_of_people' => fake()->numberBetween(1, 16),
+            'phone_number' => fake()->phoneNumber(),
+            'email' => fake()->safeEmail(),
+            'comment' => fake()->sentence(),
+            'date' => fake()->date(),
+            'arrival' => fake()->time(),
+            'departure' => fake()->time(),
         ];
     }
 }

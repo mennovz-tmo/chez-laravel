@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
@@ -47,10 +46,16 @@ class RecipeController extends Controller
         return redirect('/admin/recipe/add');
     }
 
-    public function delete(Request $request) {
-        $validator = $request->validate([
-            
-        ]);
+    public function delete(Request $request, $id)
+    {
+        $recipe_to_delete = Recipe::find($id);
+        if ($recipe_to_delete != null) {
+            Recipe::find($id)->delete();
+
+            return redirect('/admin/recipe/add');
+        } else {
+            return redirect('/admin/recipe/add')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
+        }
     }
 
     public function menu()
