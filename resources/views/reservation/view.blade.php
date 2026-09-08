@@ -18,6 +18,7 @@
                 $number = $reservering['number'];
                 $name = $reservering['name'];
                 $amount_of_people = $reservering['amount_of_people'];
+                $reservering_email = $reservering['email'];
                 $phone_number = $reservering['phone_number'];
                 $comment = $reservering['comment'];
                 $date = $reservering['date'];
@@ -31,6 +32,9 @@
                 </p>
                 <p>
                     Telefoon nummer: {{ $phone_number }}
+                </p>
+                <p>
+                    Telefoon nummer: {{ $reservering_email }}
                 </p>
                 <p>
                     Gereserveerd voor: {{ $date }} om {{ $arrival }}.

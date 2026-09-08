@@ -23,6 +23,7 @@
                     <ul class="dropdown-menu">
                         @auth
                             <li><a class="dropdown-item" href="/admin/recipe/add">recept toevoegen</a></li>
+                            <li><a class="dropdown-item" href="/reservation/view">Reserveringen beheren</a></li>
                             <li><a class="dropdown-item" href="/admin/auth/logout">uitloggen</a></li>
                         @else
                             <li><a class="dropdown-item" href="/admin/auth/login">inloggen</a></li>

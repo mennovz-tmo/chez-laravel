@@ -6,6 +6,7 @@ use App\Models\Reservation;
 use Date;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,12 @@ class ReservationController extends Controller
 
     public function view(Request $request)
     {
+        if (Auth::check() && $request->input('email') == null) {
+            $reservation_details = json_decode(json_encode(DB::select('select * from reservations order by date desc, arrival desc')), true);
+
+            return view('reservation.view')->with('reserveringen', $reservation_details)->with('email', $request->input('email'));
+        }
+
         if (! $request->isMethod('POST')) {
             return view('reservation.view');
         }
