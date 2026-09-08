@@ -15,9 +15,9 @@ class RecipeController extends Controller
     public function create(Request $request)
     {
         $validator = $request->validate([
-            'name' => ['bail', 'required', 'min:3', 'max:255'],
-            'description_short' => ['required', 'min:16', 'max:1023'],
-            'allergens' => ['required', 'string', 'min:3'],
+            'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
+            'description_short' => ['required', 'min:1', 'max:1024'],
+            'allergens' => ['required', 'string', 'min:1'],
             'price' => ['required', 'decimal:2', 'min:0.01'],
             // 'picture' => ['required', '', 'min:3']
             // ^^^ My brain I thought it was already a string ready for saving here. :) LOL.
@@ -43,7 +43,7 @@ class RecipeController extends Controller
             'picture' => $picture_loc,
         ]);
 
-        return redirect('/admin/recipe/add');
+        return redirect('/admin/recipe/add')->with('success', 'Het menu item is toegevoegd.');
     }
 
     public function delete(Request $request, $id)
@@ -52,9 +52,9 @@ class RecipeController extends Controller
         if ($recipe_to_delete != null) {
             Recipe::find($id)->delete();
 
-            return redirect('/admin/recipe/add');
+            return redirect('/menu')->with('success', 'Het menu items is verwijderd.');
         } else {
-            return redirect('/admin/recipe/add')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
+            return redirect('/menu')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
         }
     }
 

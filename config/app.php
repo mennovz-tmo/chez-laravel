@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Restaurant Seats
+    |--------------------------------------------------------------------------
+    |
+    | The amount of seats that the restaurant has in total.
+    |
+    */
+
+    'seats' => env('RESTAURANT_SEATS', 80),
 ];

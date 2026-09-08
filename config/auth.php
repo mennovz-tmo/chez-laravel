@@ -114,4 +114,14 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Account Creation Enabled
+    |--------------------------------------------------------------------------
+    |
+    | With this environment variable you can enable or disable the registration of new users.
+    |
+    */
+
+    'account_creation_enabled' => env('AUTH_ACCOUNT_CREATION_ENABLED', true),
 ];

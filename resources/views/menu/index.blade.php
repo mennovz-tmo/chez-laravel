@@ -7,6 +7,7 @@
         @else
             @foreach ($recipes as $recipe)
                 @php
+                    $id = $recipe['id'];
                     $name = $recipe['name'];
                     $description = $recipe['description_short'];
                     $allergens = $recipe['allergens'];
@@ -23,7 +24,7 @@
                         </p>
                         <a href="#" class="btn btn-primary">€{{ $price }}</a>
                         @auth
-                            <a href="/admin/recipe/delete"></a>
+                            <a href="/admin/recipe/delete/{{ $id }}" class="btn btn-danger">Verwijderen van menu</a>
                         @endauth
                     </div>
                 </div>

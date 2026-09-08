@@ -8,8 +8,7 @@
         </div>
         <div class="mb-3">
             <label for="pass" class="form-label">Korte omschrijving recept</label>
-            <textarea required name="description_short" id="description_short" cols="30" rows="10"
-                placeholder="Geef een korte omschrijving van het recept, ongeveer 2 zinnen.">{{ old('description_short') }}</textarea>
+            <textarea required class="form-control" name="description_short" id="description_short" placeholder="Geef een korte omschrijving van het recept, ongeveer 2 zinnen.">{{ old('description_short') }}</textarea>
         </div>
         <div class="mb-3">
             <label for="allergens" class="form-label">Allergenen in het recept</label>
@@ -17,13 +16,11 @@
         </div>
         <div class="mb-3">
             <label for="price" class="form-label">Prijs van het recept</label>
-            <input required type="number" class="form-control" id="price" name="price" step="0.01" min="0.01"
-                value="{{ old('email') }}">
+            <input required type="number" class="form-control" id="price" name="price" step="0.01" min="0.01" value="{{ old('email') }}">
         </div>
         <div class="mb-3">
             <label for="picture" class="form-label">Foto van het recept</label>
-            <input required type="file" class="form-control" id="picture" name="picture"
-                accept=".png,.jpg,.webp,.avif,.jpeg,image/png,image/jpeg,image/webp" value="{{ old('picture') }}">
+            <input required type="file" class="form-control" id="picture" name="picture" accept=".png,.jpg,.webp,.avif,.jpeg,image/png,image/jpeg,image/webp" value="{{ old('picture') }}">
         </div>
         @csrf
         <button type="submit" class="btn btn-primary">Submit</button>

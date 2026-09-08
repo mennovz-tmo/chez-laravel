@@ -13,24 +13,17 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/menu">menu</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reservation">reserveren</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         administratie
                     </a>
                     <ul class="dropdown-menu">
                         @auth
-                            <li><a class="dropdown-item" href="/admin/auth/logout">uitloggen</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
                             <li><a class="dropdown-item" href="/admin/recipe/add">recept toevoegen</a></li>
-                            <li><a class="dropdown-item disabled" href="#" aria-disabled="true">recept aanpassen</a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item disabled" href="#" aria-disabled="true">recept verwijderen</a>
-                            </li>
+                            <li><a class="dropdown-item" href="/admin/auth/logout">uitloggen</a></li>
                         @else
                             <li><a class="dropdown-item" href="/admin/auth/login">inloggen</a></li>
                         @endauth

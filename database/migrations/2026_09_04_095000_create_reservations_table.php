@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('amount_of_people');
             $table->string('phone_number');
             $table->string('email');
-            $table->string('comment');
+            $table->string('comment')->nullable();
             $table->date('date');
             $table->time('arrival');
             $table->time('departure');
