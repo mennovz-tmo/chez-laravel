@@ -22,7 +22,8 @@ class ReservationController extends Controller
             'email' => ['required', 'email'],
             'comment' => ['nullable', 'string', 'max:1024'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
-            'arrival' => ['required', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
+            // 'arrival' => ['required', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
+            // 'arrival' => ['required', 'between:1600,2200'],
         ],
             [
                 'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
@@ -32,7 +33,7 @@ class ReservationController extends Controller
         $min = DateTime::createFromFormat('H:i', '16:00');
         $max = DateTime::createFromFormat('H:i', '22:00');
         // dd([$input, $min, $max]);
-        if ($input < $min && $input > $max) {
+        if ($input < $min || $input > $max) {
             return redirect('/reservation')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
         }
 
