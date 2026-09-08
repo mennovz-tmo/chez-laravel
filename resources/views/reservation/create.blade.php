@@ -28,7 +28,7 @@
         </div>
         <div class="m-1">
             <label for="pass" class="form-label">Welke tijd verwacht je er te zijn?</label>
-            <input required type="time" class="form-control" name="arrival" id="arrival" min="15:00" max="23:00" value="{{ old('arrival') }}">
+            <input required type="time" class="form-control" name="arrival" id="arrival" min="16:00" max="22:00" value="{{ old('arrival') }}">
         </div>
         <div class="m-1">
             <label for="pass" class="form-label">Opmerking(en) over de reservering:</label>
