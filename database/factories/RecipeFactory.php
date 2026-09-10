@@ -20,7 +20,7 @@ class RecipeFactory extends Factory
         return [
             'name' => fake()->name(),
             'description_short' => fake()->paragraph(2),
-            'allergens' => [fake()->word()],
+            'allergens' => fake()->word(),
             'price' => fake()->numberBetween(1, 35),
             'picture' => fake()->filePath(),
         ];

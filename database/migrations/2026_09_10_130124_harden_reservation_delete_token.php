@@ -13,7 +13,7 @@ return new class extends Migration
             $table->timestamp('delete_token_expires_at')->nullable();
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('reservations', function (Blueprint $table) {

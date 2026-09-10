@@ -33,6 +33,8 @@ Route::controller(RecipeController::class)
             ->prefix('{recipe}')
             ->group(function () {
                 Route::get('/delete', 'delete');
+                Route::get('/edit', 'edit');
+                Route::post('/edit', 'edit');
             });
     });
 
