@@ -31,7 +31,7 @@
                 $reservation_email = $reservation['email'];
                 $phone_number = $reservation['phone_number'];
                 $comment = $reservation['comment'];
-                $date = $reservation['date'];
+                $date = $reservation['date']->format('d-m-Y');
                 $arrival_h_m_s = explode(':', $reservation['arrival']);
                 $arrival = "{$arrival_h_m_s[0]}:{$arrival_h_m_s[1]}";
                 $created_at = $reservation['created_at'];
@@ -50,7 +50,7 @@
                         </p>
                     @endif
                     <p>
-                        Gereserveerde datum {{ $date }} vanaf {{ $arrival }}. Met {{ $amount_of_people }} mensen. <br>
+                        Gereserveerde datum {{ $date }} vanaf {{ $arrival }} uur. Met {{ $amount_of_people }} mensen. <br>
                         Reservering gedaan op: {{ $created_at }}.
                     </p>
                     <p>
@@ -73,6 +73,7 @@
                 @endauth
                 <div class="d-grid gap-2 d-flex justify-content-start">
                     <a href="reservation/{{ $id }}/delete" class="btn btn-danger">Verwijder reservering</a>
+                    <a href="reservation/{{ $id }}/edit" class="btn btn-warning">Reservering aanpassen</a>
                 </div>
                 @guest
                     <small class="text-muted">Je ontvangt eerst een e-mail met een link om het verwijderen te bevestigen.</small>

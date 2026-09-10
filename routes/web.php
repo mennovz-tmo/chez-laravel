@@ -33,8 +33,7 @@ Route::controller(RecipeController::class)
             ->prefix('{recipe}')
             ->group(function () {
                 Route::get('/delete', 'delete');
-                Route::get('/edit', 'edit');
-                Route::post('/edit', 'edit');
+                Route::match(['get', 'post'], '/edit', 'edit');
             });
     });
 
@@ -47,8 +46,7 @@ Route::controller(RecipeController::class)
 Route::controller(ReservationController::class)
     ->prefix('reservation')
     ->group(function () {
-        Route::get('/', 'view');
-        Route::post('/', 'view');
+        Route::match(['get', 'post'], '/', 'view');
         Route::get('/create', 'index');
         Route::post('/create', 'create');
 
@@ -57,5 +55,6 @@ Route::controller(ReservationController::class)
             ->group(function () {
                 Route::get('/delete', 'delete')->name('reservation.delete.request');
                 Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
+                Route::match(['get', 'post'], '/edit', 'edit');
             });
     });

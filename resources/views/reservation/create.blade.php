@@ -1,7 +1,7 @@
 @extends('layouts.page')
 
 @section('content')
-    <form action="create" method="post">
+    <form action="edit" method="post">
         <div class="m-1">
             <label for="name" class="form-label">Wat is je naam?</label>
             <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe" value="{{ old('name') }}">

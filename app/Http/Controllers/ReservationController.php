@@ -92,9 +92,11 @@ class ReservationController extends Controller
             'email' => ['required', 'email', 'min:5'],
         ]);
 
-        // $reservation_details = Reservation::select('*')->where('email', '=', $request->input('email'));
-        $reservation_details = json_decode(json_encode(DB::select('select * from reservations where email = ? order by date desc, arrival desc limit 10', [$request->input('email')])), true);
-        // dd($reservation_details);
+        $reservation_details = Reservation::where('email', $request->input('email'))
+            ->orderByDesc('date')
+            ->orderByDesc('arrival')
+            ->limit(10)
+            ->get();
 
         return view('reservation.view')->with('reservations', $reservation_details)->with('email', $request->input('email'));
     }
@@ -166,5 +168,60 @@ class ReservationController extends Controller
         Mail::to($reservation->email)->send(new ReservationCreated($reservation));
 
         return redirect('/reservation')->with('success', 'De reservering is gelukt! U krijgt een email met de details.');
+    }
+
+    public function edit(Request $request, int $id)
+    {
+        if ($request->isMethod('GET')) {
+            return view('reservation.edit')->with('current_data', (array) DB::select('select * from reservations where id = ?;', [$id])[0]);
+        }
+
+        $validator = $request->validate([
+            'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
+            'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
+            'phone_number' => ['required', 'phone_number', 'min:10', 'max:11'],
+            'email' => ['required', 'email'],
+            'comment' => ['nullable', 'string', 'max:1024'],
+            'date' => ['required', 'date', 'date_format:Y-m-d'],
+            'arrival' => ['required', 'string', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
+        ],
+            [
+                'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
+            ]);
+
+        $input = DateTime::createFromFormat('H:i', $request->input('arrival'));
+        $min = DateTime::createFromFormat('H:i', '16:00');
+        $max = DateTime::createFromFormat('H:i', '22:00');
+        if ($input < $min || $input > $max) {
+            return redirect('/reservation')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
+        }
+        $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+24 hours')->format('Y-m-d'));
+        $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
+        if ($current_date > $select_date) {
+            return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.');
+        }
+
+        $reservation = Reservation::findOrFail($id);
+
+        $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $id]);
+        $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'] ?? 0;
+        if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
+            return redirect('/reservation')->withErrors('De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!');
+        }
+
+        $reservation->update([
+            'name' => $request->input('name'),
+            'amount_of_people' => $request->input('amount_of_people'),
+            'phone_number' => $request->input('phone_number'),
+            'email' => $request->input('email'),
+            'comment' => $request->input('comment'),
+            'date' => $request->input('date'),
+            'arrival' => $request->input('arrival'),
+            'departure' => new DateTime($request->input('arrival'))->modify('+120 minutes'),
+        ]);
+
+        Mail::to($reservation->email)->send(new ReservationCreated($reservation));
+
+        return redirect('/reservation')->with('success', 'De reservering is aangepast! U krijgt een email met de nieuwe details.');
     }
 }
