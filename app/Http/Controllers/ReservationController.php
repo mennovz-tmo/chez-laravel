@@ -14,26 +14,37 @@ class ReservationController extends Controller
     public function delete($id)
     {
         $reservation_to_delete = Reservation::find($id);
-        if ($reservation_to_delete != null) {
-            Reservation::find($id)->delete();
-
-            return redirect('/reservation/view')->with('success', 'De reservering is verwijderd');
-        } else {
+        $reservation_date_time = (array) (DB::select('select "date", "arrival" from reservations where id = ?', [$id]))[0];
+        if ($reservation_to_delete == null) {
             return redirect('/reservation/view')->withErrors('De reservering die verwijderd zou worden bestaat niet!');
         }
+        if (! Auth::check()) {
+            $max = now()->modify('-12 hours');
+            $datetime_of_reservation = new DateTime("{$reservation_date_time['date']} {$reservation_date_time['arrival']}");
+            if ($max < $datetime_of_reservation) {
+                return redirect('/reservation/view')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
+            }
+        }
+
+        Reservation::find($id)->delete();
+
+        return redirect('/reservation/view')->with('success', 'De reservering is verwijderd');
     }
 
     public function index()
     {
+        // if (Auth::check()) {
+        //     return view('reservation.create')->with('reservations', Reservation::get());
+        // }
         return view('reservation.create');
     }
 
     public function view(Request $request)
     {
         if (Auth::check() && $request->input('email') == null) {
-            $reservation_details = json_decode(json_encode(DB::select('select * from reservations order by date desc, arrival desc')), true);
+            // $reservation_details = json_decode(json_encode(DB::select('select * from reservations order by date desc, arrival desc')), true);
 
-            return view('reservation.view')->with('reserveringen', $reservation_details)->with('email', $request->input('email'));
+            return view('reservation.view')->with('reservations', Reservation::get());
         }
 
         if (! $request->isMethod('POST')) {
@@ -48,7 +59,7 @@ class ReservationController extends Controller
         $reservation_details = json_decode(json_encode(DB::select('select * from reservations where email = ? order by date desc, arrival desc limit 10', [$request->input('email')])), true);
         // dd($reservation_details);
 
-        return view('reservation.view')->with('reserveringen', $reservation_details)->with('email', $request->input('email'));
+        return view('reservation.view')->with('reservations', $reservation_details)->with('email', $request->input('email'));
     }
 
     public function create(Request $request)
@@ -104,8 +115,10 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
         }
 
+        $number = generate_reservation_number();
+
         Reservation::fillAndInsert([
-            'number' => generate_reservation_number(),
+            'number' => $number,
             'name' => $request->input('name'),
             'amount_of_people' => $request->input('amount_of_people'),
             'phone_number' => $request->input('phone_number'),
@@ -116,6 +129,6 @@ class ReservationController extends Controller
             'departure' => new DateTime($request->input('arrival'))->modify('+120 minutes'),
         ]);
 
-        return redirect('/reservation')->with('success', 'De reservering is gelukt!');
+        return redirect('/reservation')->with('success', "De reservering is gelukt! U krijgt een email met de details.");
     }
 }

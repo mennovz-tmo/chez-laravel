@@ -25,7 +25,8 @@
                         @auth
                             <div class="d-grid gap-2 d-flex justify-content-end">
                                 <a href="#" class="btn btn-primary">€{{ $price }}</a>
-                                <a href="/admin/recipe/delete/{{ $id }}" class="btn btn-danger">Verwijderen van menu</a>
+                                <a href="/recipe/{{ $id }}/delete" class="btn btn-danger">Verwijderen van menu</a>
+                                <a href="/recipe/{{ $id }}/edit" class="btn btn-warning">Recept aanpassen</a>
                             </div>
                         @endauth
                     </div>

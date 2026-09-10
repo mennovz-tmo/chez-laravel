@@ -1,55 +1,86 @@
 @extends('layouts.page')
 
 @section('content')
-    <form action="view" method="post">
+    <form action="reservation" method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Wat is het emailadres van de reservering(en)?</label>
             <div class="row">
-                <input @guest required @endguest type="text" class="col-8" id="email" name="email" placeholder="John Doe" value="{{ old('email') }}">
+                <input @guest required @endguest type="text" class="col-8" id="email" name="email" placeholder="John Doe"
+                    value="{{ old('email') }}">
                 <button type="submit" class="col-4 btn btn-primary">Zoek uw reservering</button>
             </div>
         </div>
     </form>
-
-    @if (request()->isMethod('post'))
-        @forelse ($reserveringen as $reservering)
+    @if (!empty($reservations))
+        @php
+            $count = count($reservations);
+        @endphp
+        <div class="mb-2">
+            @if (! empty($email))
+                <p>Er zijn totaal {{ $count }} reserveringen voor {{ $email }}</p>
+            @else
+                <p>Alle reserveringen worden laten zien</p>
+            @endif
+        </div>
+        @forelse ($reservations as $reservation)
             @php
-                $id = $reservering['id'];
-                $number = $reservering['number'];
-                $name = $reservering['name'];
-                $amount_of_people = $reservering['amount_of_people'];
-                $reservering_email = $reservering['email'];
-                $phone_number = $reservering['phone_number'];
-                $comment = $reservering['comment'];
-                $date = $reservering['date'];
-                $arrival = $reservering['arrival'];
-                $created_at = $reservering['created_at'];
+                $id = $reservation['id'];
+                $number = $reservation['number'];
+                $name = $reservation['name'];
+                $amount_of_people = $reservation['amount_of_people'];
+                $reservation_email = $reservation['email'];
+                $phone_number = $reservation['phone_number'];
+                $comment = $reservation['comment'];
+                $date = $reservation['date'];
+                $arrival_h_m_s = explode(':', $reservation['arrival']);
+                $arrival = "{$arrival_h_m_s[0]}:{$arrival_h_m_s[1]}";
+                $created_at = $reservation['created_at'];
             @endphp
 
             <div class="card mb-2 p-2">
-                <p>
-                    Reservering: {{ $number }} ({{ $id }}) voor {{ $amount_of_people }} personen.
-                </p>
-                <p>
-                    Telefoon nummer: {{ $phone_number }}
-                </p>
-                <p>
-                    Telefoon nummer: {{ $reservering_email }}
-                </p>
-                <p>
-                    Gereserveerd voor: {{ $date }} om {{ $arrival }}.
-                </p>
-                <p>
-                    Reservering gemaakt op: {{ $created_at }}
-                </p>
                 @auth
-                    <div class="d-grid gap-2 d-flex justify-content-end">
-                        <a href="/admin/reservation/delete/{{ $id }}" class="flex-end max-25 btn btn-danger">Verwijder reservering</a>
-                    </div>
+                    <p>
+                        Reservering gemaakt op naam: {{ $name }} <br>
+                        Reserveerder telefoon: {{ $phone_number }} <br>
+                        Reserveerder email: {{ $reservation_email }}
+                    </p>
+                    @if (!empty($comment))
+                        <p>
+                            Opmerking: {{ $comment }}
+                        </p>
+                    @endif
+                    <p>
+                        Gereserveerde datum {{ $date }} vanaf {{ $arrival }}. Met {{ $amount_of_people }} mensen. <br>
+                        Reservering gedaan op: {{ $created_at }}.
+                    </p>
+                    <p>
+                        Technische info: <br>
+                        Reserverings nummer: {{ $number }} <br>
+                        Debug reserverings nummer: ({{ $id }})
+                    </p>
+                @else
+                    <p>
+                        Reservering gemaakt op naam: {{ $name }} voor {{ $amount_of_people }} personen. <br>
+                        Reservering voor {{ $date }} vanaf {{ $arrival }}.
+                    </p>
+                    <p>
+                        Vermelde opmerking: {{ $comment }}
+                    </p>
+                    <p>
+                        Technische info: <br>
+                        Reserverings nummer: {{ $number }}
+                    </p>
                 @endauth
+                <div class="d-grid gap-2 d-flex justify-content-start">
+                    <a href="reservation/{{ $id }}/delete" class="btn btn-danger">Verwijder reservering</a>
+                </div>
             </div>
         @empty
-            <p>Geen reseveringen gevonden voor email: {{ $email }}</p>
+            @if (empty($email))
+                <p>Er zijn geen reserveringen.</p>
+            @else
+                <p>Geen reseveringen gevonden voor email: {{ $email }}</p>
+            @endif
         @endforelse
     @endif
 @endsection

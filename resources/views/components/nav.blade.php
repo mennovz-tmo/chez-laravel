@@ -18,8 +18,8 @@
                         reservering opties
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/reservation">reservering maken</a></li>
-                        <li><a class="dropdown-item" href="/reservation/view">reservering bekijken</a></li>
+                        <li><a class="dropdown-item" href="/reservation/create">reservering maken</a></li>
+                        <li><a class="dropdown-item" href="/reservation">reservering bekijken</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -28,11 +28,18 @@
                     </a>
                     <ul class="dropdown-menu">
                         @auth
-                            <li><a class="dropdown-item" href="/admin/recipe/add">recept toevoegen</a></li>
-                            <li><a class="dropdown-item" href="/reservation/view">Reserveringen beheren</a></li>
-                            <li><a class="dropdown-item" href="/admin/auth/logout">uitloggen</a></li>
+                            <li><a class="dropdown-item" href="/recipe">recept toevoegen</a></li>
+                            <li><a class="dropdown-item" href="/menu">recepten beheren</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/reservation">reserveringen beheren</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/auth/logout">uitloggen</a></li>
                         @else
-                            <li><a class="dropdown-item" href="/admin/auth/login">inloggen</a></li>
+                            <li><a class="dropdown-item" href="/auth/login">inloggen</a></li>
                         @endauth
                     </ul>
                 </li>
