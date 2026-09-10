@@ -9,7 +9,7 @@ class RecipeController extends Controller
 {
     public function index()
     {
-        return view('admin.recipe.index');
+        return view('recipe.index');
     }
 
     public function create(Request $request)
