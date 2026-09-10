@@ -53,6 +53,7 @@ Route::controller(ReservationController::class)
         Route::controller(ReservationController::class)
             ->prefix('{reservation}')
             ->group(function () {
-                Route::get('/delete', 'delete');
+                Route::get('/delete', 'delete')->name('reservation.delete.request');
+                Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
             });
     });

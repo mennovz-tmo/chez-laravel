@@ -74,6 +74,9 @@
                 <div class="d-grid gap-2 d-flex justify-content-start">
                     <a href="reservation/{{ $id }}/delete" class="btn btn-danger">Verwijder reservering</a>
                 </div>
+                @guest
+                    <small class="text-muted">Je ontvangt eerst een e-mail met een link om het verwijderen te bevestigen.</small>
+                @endguest
             </div>
         @empty
             @if (empty($email))

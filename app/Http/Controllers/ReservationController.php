@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ReservationCreated;
+use App\Mail\ReservationDeleteRequested;
 use App\Models\Reservation;
 use DateTime;
 use Illuminate\Http\Request;
@@ -13,24 +14,58 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
-    public function delete($id)
+    public function delete(Request $request, string $reservation, ?string $delete_token = null)
     {
-        $reservation_to_delete = Reservation::find($id);
-        $reservation_date_time = (array) (DB::select('select "date", "arrival" from reservations where id = ?', [$id]))[0];
+        $reservation_to_delete = Reservation::find($reservation);
+
         if ($reservation_to_delete == null) {
-            return redirect('/reservation/view')->withErrors('De reservering die verwijderd zou worden bestaat niet!');
-        }
-        if (! Auth::check()) {
-            $max = now()->modify('-12 hours');
-            $datetime_of_reservation = new DateTime("{$reservation_date_time['date']} {$reservation_date_time['arrival']}");
-            if ($max < $datetime_of_reservation) {
-                return redirect('/reservation/view')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
-            }
+            return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden bestaat niet!');
         }
 
-        Reservation::find($id)->delete();
+        // Ingelogde medewerkers mogen direct verwijderen.
+        if (Auth::check()) {
+            $reservation_to_delete->delete();
 
-        return redirect('/reservation/view')->with('success', 'De reservering is verwijderd');
+            return redirect('/reservation')->with('success', 'De reservering is verwijderd');
+        }
+
+        if (! $this->isDeletionAllowed($reservation_to_delete)) {
+            return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
+        }
+
+        // Stap 1: gast vraagt verwijdering aan -> stuur verificatielink per e-mail.
+        if ($delete_token == null) {
+            $plainToken = $reservation_to_delete->generateDeleteToken();
+
+            Mail::to($reservation_to_delete->email)->send(new ReservationDeleteRequested($reservation_to_delete, $plainToken));
+
+            return view('reservation.delete')->with('reservation', $reservation_to_delete);
+        }
+
+        // Stap 2: gast klikt op de link in de e-mail -> controleer het token.
+        if ($reservation_to_delete->delete_token_expires_at !== null && $reservation_to_delete->delete_token_expires_at->isPast()) {
+            $reservation_to_delete->clearDeleteToken();
+
+            return redirect('/reservation')->withErrors('De link om te verwijderen is verlopen! Vraag opnieuw een verwijdering aan om een nieuwe link te krijgen.');
+        }
+
+        if (! $reservation_to_delete->hasValidDeleteToken($delete_token)) {
+            return redirect('/reservation')->withErrors('Deze link om een reservering te verwijderen is niet geldig!');
+        }
+
+        $reservation_to_delete->delete();
+
+        return redirect('/reservation')->with('success', 'De reservering is verwijderd');
+    }
+
+    /**
+     * A guest may only delete up to 12 hours before the reservation.
+     */
+    private function isDeletionAllowed(Reservation $reservation): bool
+    {
+        $datetime_of_reservation = new DateTime("{$reservation->date->format('Y-m-d')} {$reservation->arrival}");
+
+        return $datetime_of_reservation > now()->addHours(12);
     }
 
     public function index()
