@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReservationCreated;
 use App\Models\Reservation;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -115,10 +117,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
         }
 
-        $number = generate_reservation_number();
-
-        Reservation::fillAndInsert([
-            'number' => $number,
+        $reservation = Reservation::create([
             'name' => $request->input('name'),
             'amount_of_people' => $request->input('amount_of_people'),
             'phone_number' => $request->input('phone_number'),
@@ -129,6 +128,8 @@ class ReservationController extends Controller
             'departure' => new DateTime($request->input('arrival'))->modify('+120 minutes'),
         ]);
 
-        return redirect('/reservation')->with('success', "De reservering is gelukt! U krijgt een email met de details.");
+        Mail::to($reservation->email)->send(new ReservationCreated($reservation));
+
+        return redirect('/reservation')->with('success', 'De reservering is gelukt! U krijgt een email met de details.');
     }
 }
