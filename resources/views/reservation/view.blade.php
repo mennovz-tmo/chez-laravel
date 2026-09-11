@@ -1,90 +1,77 @@
 @extends('layouts.page')
 
 @section('content')
-    <form action="reservation" method="post">
-        <div class="mb-3">
-            <label for="email" class="form-label">Wat is het emailadres van de reservering(en)?</label>
-            <div class="row">
-                <input @guest required @endguest type="text" class="col-8" id="email" name="email" placeholder="John Doe"
-                    value="{{ old('email') }}">
-                <button type="submit" class="col-4 btn btn-primary">Zoek uw reservering</button>
-            </div>
-        </div>
-    </form>
-    @if (!empty($reservations))
-        @php
-            $count = count($reservations);
-        @endphp
-        <div class="mb-2">
-            @if (! empty($email))
-                <p>Er zijn totaal {{ $count }} reserveringen voor {{ $email }}</p>
-            @else
-                <p>Alle reserveringen worden laten zien</p>
-            @endif
-        </div>
-        @forelse ($reservations as $reservation)
-            @php
-                $id = $reservation['id'];
-                $number = $reservation['number'];
-                $name = $reservation['name'];
-                $amount_of_people = $reservation['amount_of_people'];
-                $reservation_email = $reservation['email'];
-                $phone_number = $reservation['phone_number'];
-                $comment = $reservation['comment'];
-                $date = $reservation['date']->format('d-m-Y');
-                $arrival_h_m_s = explode(':', $reservation['arrival']);
-                $arrival = "{$arrival_h_m_s[0]}:{$arrival_h_m_s[1]}";
-                $created_at = $reservation['created_at'];
-            @endphp
-
-            <div class="card mb-2 p-2">
-                @auth
-                    <p>
-                        Reservering gemaakt op naam: {{ $name }} <br>
-                        Reserveerder telefoon: {{ $phone_number }} <br>
-                        Reserveerder email: {{ $reservation_email }}
-                    </p>
-                    @if (!empty($comment))
-                        <p>
-                            Opmerking: {{ $comment }}
-                        </p>
-                    @endif
-                    <p>
-                        Gereserveerde datum {{ $date }} vanaf {{ $arrival }} uur. Met {{ $amount_of_people }} mensen. <br>
-                        Reservering gedaan op: {{ $created_at }}.
-                    </p>
-                    <p>
-                        Technische info: <br>
-                        Reserverings nummer: {{ $number }} <br>
-                        Debug reserverings nummer: ({{ $id }})
-                    </p>
-                @else
-                    <p>
-                        Reservering gemaakt op naam: {{ $name }} voor {{ $amount_of_people }} personen. <br>
-                        Reservering voor {{ $date }} vanaf {{ $arrival }}.
-                    </p>
-                    <p>
-                        Vermelde opmerking: {{ $comment }}
-                    </p>
-                    <p>
-                        Technische info: <br>
-                        Reserverings nummer: {{ $number }}
-                    </p>
-                @endauth
-                <div class="d-grid gap-2 d-flex justify-content-start">
-                    <a href="reservation/{{ $id }}/delete" class="btn btn-danger">Verwijder reservering</a>
-                    <a href="reservation/{{ $id }}/edit" class="btn btn-warning">Reservering aanpassen</a>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <h1 class="display-5 mb-4" style="font-weight:300;">Zoek reservering</h1>
+        <form action="reservation" method="post" class="card p-4 shadow-sm" style="background:var(--earth-cream);border-color:var(--earth-light);border-radius:8px;">
+            @csrf
+            <div class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label for="email" class="form-label">Emailadres</label>
+                    <input @guest required @endguest type="text" class="form-control" id="email" name="email" placeholder="John Doe" value="{{ old('email') }}" style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                 </div>
-                @guest
-                    <small class="text-muted">Je ontvangt eerst een e-mail met een link om het verwijderen te bevestigen.</small>
-                @endguest
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">Zoek</button>
+                </div>
             </div>
-        @empty
-            @if (empty($email))
-                <p>Er zijn geen reserveringen.</p>
-            @else
-                <p>Geen reseveringen gevonden voor email: {{ $email }}</p>
-            @endif
-        @endforelse
-    @endif
+        </form>
+    </div>
+</div>
+
+@if (!empty($reservations))
+<h2 class="h3 mt-5 mb-3" style="font-family:'Cormorant Garamond',serif;font-weight:600;">
+    @if (!empty($email)) Reserveringen voor {{ $email }} @else Alle reserveringen @endif
+</h2>
+<div class="row g-3">
+    @forelse ($reservations as $reservation)
+        @php
+            $id = $reservation['id'];
+            $number = $reservation['number'];
+            $name = $reservation['name'];
+            $amount_of_people = $reservation['amount_of_people'];
+            $reservation_email = $reservation['email'];
+            $phone_number = $reservation['phone_number'];
+            $comment = $reservation['comment'];
+            $date = $reservation['date']->format('d-m-Y');
+            $arrival = explode(':', $reservation['arrival']);
+            $arrival = $arrival[0] . ':' . $arrival[1];
+            $created_at = $reservation['created_at'];
+        @endphp
+        <div class="col-12">
+            <div class="card shadow-sm p-3" style="background:var(--earth-cream);border-color:var(--earth-light);border-radius:8px;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3 class="h5 mb-2" style="font-family:'Cormorant Garamond',serif;font-weight:600;">{{ $name }}</h3>
+                        <p class="mb-1" style="font-size:0.9rem;color:var(--earth-mid);">
+                            {{ $amount_of_people }} personen. {{ $date }} vanaf {{ $arrival }}u
+                        </p>
+                        @auth
+                        <p class="mb-1" style="font-size:0.85rem;color:var(--earth-rust);">{{ $reservation_email }} · {{ $phone_number }}</p>
+                        @if(!empty($comment))<p class="mb-0" style="font-style:italic;color:var(--earth-mid);">"{{ $comment }}"</p>@endif
+                        @endauth
+                        @guest
+                        <p class="mb-0" style="font-size:0.9rem;color:var(--earth-mid);">{{ $date }} vanaf {{ $arrival }} · {{ $amount_of_people }} personen</p>
+                        @if(!empty($comment))<p class="mb-0" style="font-size:0.85rem;color:var(--earth-mid);">Opmerking: {{ $comment }}</p>@endif
+                        @endguest
+                    </div>
+                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                        @auth
+                        <a href="reservation/{{ $id }}/delete" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);">Verwijder</a>
+                        <a href="reservation/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
+                        @else
+                        <a href="reservation/{{ $id }}/delete" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);">Annuleer</a>
+                        @endauth
+                    </div>
+                </div>
+                <div class="mt-2 pt-2 border-top" style="border-color:var(--earth-light);font-size:0.75rem;color:var(--earth-mid);">
+                    Reserveringsnummer: {{ $number }} · Gemaakt op {{ $created_at }}
+                </div>
+            </div>
+        </div>
+    @empty
+        <p>Geen reserveringen gevonden.</p>
+    @endforelse
+</div>
+@endif
 @endsection
