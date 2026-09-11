@@ -3,6 +3,8 @@
 @php
     $arrival_h_m_s = explode(':', $current_data['arrival']);
     $arrival = "{$arrival_h_m_s[0]}:{$arrival_h_m_s[1]}";
+
+    $date = new DateTime($current_data['date'])->format('Y-m-d');
 @endphp
 
 @section('content')
@@ -34,7 +36,7 @@
             @endphp
             <label for="pass" class="form-label">Voor welke datum reserveer je?</label>
             <input required type="date" class="form-control" name="date" id="date" min="{{ $min->format('d-m-Y') }}"
-                max="{{ $max->format('d-m-Y') }}" value="{{ $current_data['date'] }}">
+                max="{{ $max->format('d-m-Y') }}" value="{{ $date }}">
         </div>
         <div class="m-1">
             <label for="pass" class="form-label">Welke tijd verwacht je er te zijn?</label>

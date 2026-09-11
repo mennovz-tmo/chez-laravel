@@ -14,46 +14,44 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
-    public function delete(Request $request, string $reservation, ?string $delete_token = null)
+    public function delete(Request $request, Reservation $reservation, ?string $delete_token = null)
     {
-        $reservation_to_delete = Reservation::find($reservation);
-
-        if ($reservation_to_delete == null) {
+        if ($reservation == null) {
             return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden bestaat niet!');
         }
 
         // Ingelogde medewerkers mogen direct verwijderen.
         if (Auth::check()) {
-            $reservation_to_delete->delete();
+            $reservation->delete();
 
             return redirect('/reservation')->with('success', 'De reservering is verwijderd');
         }
 
-        if (! $this->isDeletionAllowed($reservation_to_delete)) {
+        if (! $this->isDeletionAllowed($reservation)) {
             return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
         }
 
         // Stap 1: gast vraagt verwijdering aan -> stuur verificatielink per e-mail.
         if ($delete_token == null) {
-            $plainToken = $reservation_to_delete->generateDeleteToken();
+            $plainToken = $reservation->generateDeleteToken();
 
-            Mail::to($reservation_to_delete->email)->send(new ReservationDeleteRequested($reservation_to_delete, $plainToken));
+            Mail::to($reservation->email)->send(new ReservationDeleteRequested($reservation, $plainToken));
 
-            return view('reservation.delete')->with('reservation', $reservation_to_delete);
+            return view('reservation.delete')->with('reservation', $reservation);
         }
 
         // Stap 2: gast klikt op de link in de e-mail -> controleer het token.
-        if ($reservation_to_delete->delete_token_expires_at !== null && $reservation_to_delete->delete_token_expires_at->isPast()) {
-            $reservation_to_delete->clearDeleteToken();
+        if ($reservation->delete_token_expires_at !== null && $reservation->delete_token_expires_at->isPast()) {
+            $reservation->clearDeleteToken();
 
             return redirect('/reservation')->withErrors('De link om te verwijderen is verlopen! Vraag opnieuw een verwijdering aan om een nieuwe link te krijgen.');
         }
 
-        if (! $reservation_to_delete->hasValidDeleteToken($delete_token)) {
+        if (! $reservation->hasValidDeleteToken($delete_token)) {
             return redirect('/reservation')->withErrors('Deze link om een reservering te verwijderen is niet geldig!');
         }
 
-        $reservation_to_delete->delete();
+        $reservation->delete();
 
         return redirect('/reservation')->with('success', 'De reservering is verwijderd');
     }
@@ -170,10 +168,10 @@ class ReservationController extends Controller
         return redirect('/reservation/create')->with('success', 'De reservering is gelukt! U krijgt een email met de details.');
     }
 
-    public function edit(Request $request, int $id)
+    public function edit(Request $request, Reservation $reservation)
     {
         if ($request->isMethod('GET')) {
-            return view('reservation.edit')->with('current_data', (array) DB::select('select * from reservations where id = ?;', [$id])[0]);
+            return view('reservation.edit')->with('current_data', $reservation->toArray());
         }
 
         $validator = $request->validate([
@@ -201,9 +199,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.');
         }
 
-        $reservation = Reservation::findOrFail($id);
-
-        $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $id]);
+        $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $reservation->id]);
         $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'] ?? 0;
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
             return redirect('/reservation')->withErrors('De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!');

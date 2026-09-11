@@ -13,10 +13,10 @@ class RecipeController extends Controller
         return view('recipe.index');
     }
 
-    public function edit(Request $request, int $id)
+    public function edit(Request $request, Recipe $recipe)
     {
         if ($request->isMethod('GET')) {
-            return view('recipe.edit')->with('current_data', (array) DB::select('select * from recipes where id = ?;', [$id])[0]);
+            return view('recipe.edit')->with('current_data', $recipe->toArray());
         }
 
         $request->validate([
@@ -26,8 +26,6 @@ class RecipeController extends Controller
             'price' => ['required', 'decimal:2', 'min:0.01'],
             'picture' => ['nullable', 'image'],
         ]);
-
-        $recipe = Recipe::findOrFail($id);
 
         $picture_loc = $recipe->picture;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
@@ -82,11 +80,10 @@ class RecipeController extends Controller
         return redirect('/menu')->with('success', 'Het menu item is toegevoegd.');
     }
 
-    public function delete(Request $request, int $id)
+    public function delete(Request $request, Recipe $recipe)
     {
-        $recipe_to_delete = Recipe::find($id);
-        if ($recipe_to_delete != null) {
-            Recipe::find($id)->delete();
+        if ($recipe != null) {
+            $recipe->delete();
 
             return redirect('/menu')->with('success', 'Het menu items is verwijderd.');
         } else {

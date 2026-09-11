@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\Auth\Register;
+use App\Http\Controllers\ErrorController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
@@ -31,6 +32,7 @@ Route::controller(RecipeController::class)
 
         Route::controller(RecipeController::class)
             ->prefix('{recipe}')
+            ->missing(fn () => ErrorController::handleError('/menu', ['Het id dat is opgevraagd bestaat niet.']))
             ->group(function () {
                 Route::get('/delete', 'delete');
                 Route::match(['get', 'post'], '/edit', 'edit');
@@ -52,6 +54,7 @@ Route::controller(ReservationController::class)
 
         Route::controller(ReservationController::class)
             ->prefix('{reservation}')
+            ->missing(fn () => ErrorController::handleError('/reservation', ['De reservering die is opgevraagd bestaat niet']))
             ->group(function () {
                 Route::get('/delete', 'delete')->name('reservation.delete.request');
                 Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
