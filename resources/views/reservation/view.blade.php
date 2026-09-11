@@ -66,12 +66,12 @@
                             </div>
                             <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                 @auth
-                                    <a href="reservation/{{ $id }}/delete" class="btn btn-dark btn-sm"
-                                        style="background:var(--earth-dark);border-color:var(--earth-dark);">Verwijder</a>
+                                    <button type="button" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);" data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
+                                    @include('components.confirm-modal', ['uid' => 'res-'.$id, 'url' => 'reservation/'.$id.'/delete', 'message' => 'Deze reservering wordt permanent verwijderd.'])
                                     <a href="reservation/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
                                 @else
-                                    <a href="reservation/{{ $id }}/delete" class="btn btn-dark btn-sm"
-                                        style="background:var(--earth-dark);border-color:var(--earth-dark);">Annuleer</a>
+                                    <button type="button" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);" data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Annuleer</button>
+                                    @include('components.confirm-modal', ['uid' => 'res-'.$id, 'url' => 'reservation/'.$id.'/delete', 'message' => 'Deze reservering wordt geannuleerd.'])
                                 @endauth
                             </div>
                         </div>

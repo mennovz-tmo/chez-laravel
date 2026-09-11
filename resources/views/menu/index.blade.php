@@ -39,8 +39,8 @@
                                 @auth
                                     <div class="d-flex gap-2">
                                         <a href="/recipe/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
-                                        <a href="/recipe/{{ $id }}/delete" class="btn btn-dark btn-sm"
-                                            style="background:var(--earth-dark);border-color:var(--earth-dark);">Verwijder</a>
+                                        <button type="button" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);" data-bs-toggle="modal" data-bs-target="#confirmModal-recipe-{{ $id }}">Verwijder</button>
+                                        @include('components.confirm-modal', ['uid' => 'recipe-'.$id, 'url' => '/recipe/'.$id.'/delete', 'message' => 'Dit recept wordt permanent verwijderd.'])
                                     </div>
                                 @endauth
                             </div>
