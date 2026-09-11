@@ -140,9 +140,10 @@ class ReservationController extends Controller
         // }
 
         // Add seats check.
-        $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ?;', [$request->input('date')]);
+        // $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ?;', []);
+        $chairs_used = Reservation::where('date', '=', $request->input('date'))->sum('amount_of_people');
         // dd($chairs_used);
-        $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'];  // I couldn't find any other way to turn it into an integer.
+        // $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'];  // I couldn't find any other way to turn it into an integer.
         // dd($chairs_used);
         // dd($chairs_used + $request->input('amount_of_people'));
         // dd(Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')));
@@ -204,8 +205,9 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.');
         }
 
-        $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $reservation->id]);
-        $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'] ?? 0;
+        // $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $reservation->id]);
+        // $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'] ?? 0;
+        $chairs_used = Reservation::where('date', '=', $reservation->date)->where('id', '!=', $reservation->id)->sum('amount_of_people') ?? 0;
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
             return redirect('/reservation')->withErrors('De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!');
         }

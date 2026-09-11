@@ -12,7 +12,7 @@
     een belangrijke mededeling is.
 
     @if($reservation->comment)
-        En als laatste is de opmerking bij de reservering: <br>
+        En als laatste is de opmerking bij de reservering:
         {{ $reservation->comment }}
     @endif
 
