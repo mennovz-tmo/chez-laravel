@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Mail\ReservationCreated;
 use App\Mail\ReservationDeleteRequested;
 use App\Models\Reservation;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use DateTime;
 
 class ReservationController extends Controller
 {
@@ -29,7 +29,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->with('success', 'De reservering is verwijderd');
         }
 
-        if (!$this->isDeletionAllowed($reservation_to_delete)) {
+        if (! $this->isDeletionAllowed($reservation_to_delete)) {
             return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
         }
 
@@ -49,7 +49,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('De link om te verwijderen is verlopen! Vraag opnieuw een verwijdering aan om een nieuwe link te krijgen.');
         }
 
-        if (!$reservation_to_delete->hasValidDeleteToken($delete_token)) {
+        if (! $reservation_to_delete->hasValidDeleteToken($delete_token)) {
             return redirect('/reservation')->withErrors('Deze link om een reservering te verwijderen is niet geldig!');
         }
 
@@ -84,7 +84,7 @@ class ReservationController extends Controller
             return view('reservation.view')->with('reservations', Reservation::get());
         }
 
-        if (!$request->isMethod('POST')) {
+        if (! $request->isMethod('POST')) {
             return view('reservation.view');
         }
 
