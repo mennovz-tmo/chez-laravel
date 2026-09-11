@@ -48,30 +48,22 @@
                             <div class="col-md-8">
                                 <h3 class="h5 mb-2" style="font-family:'Cormorant Garamond',serif;font-weight:600;">{{ $name }}</h3>
                                 <p class="mb-1" style="font-size:0.9rem;color:var(--earth-mid);">
-                                    {{ $amount_of_people }} personen. {{ $date }} vanaf {{ $arrival }}u
+                                    {{ $date }} vanaf {{ $arrival }} voor {{ $amount_of_people }} personen.
                                 </p>
                                 @auth
-                                    <p class="mb-1" style="font-size:0.85rem;color:var(--earth-rust);">{{ $reservation_email }} ·
-                                        {{ $phone_number }}</p>
-                                    @if(!empty($comment))
-                                    <p class="mb-0" style="font-style:italic;color:var(--earth-mid);">"{{ $comment }}"</p>@endif
+                                    <p class="mb-0" style="font-size:0.85rem;color:var(--earth-rust);">Telefoon: {{ $phone_number }}</p>
                                 @endauth
-                                @guest
-                                    <p class="mb-0" style="font-size:0.9rem;color:var(--earth-mid);">{{ $date }} vanaf {{ $arrival }} ·
-                                        {{ $amount_of_people }} personen</p>
-                                    @if(!empty($comment))
-                                        <p class="mb-0" style="font-size:0.85rem;color:var(--earth-mid);">Opmerking: {{ $comment }}</p>
-                                    @endif
-                                @endguest
                             </div>
                             <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                 @auth
                                     <button type="button" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);" data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
                                     @include('components.confirm-modal', ['uid' => 'res-'.$id, 'url' => 'reservation/'.$id.'/delete', 'message' => 'Deze reservering wordt permanent verwijderd.'])
+                                    <a href="reservation/{{ $id }}/show" class="btn btn-outline-dark btn-sm">Bekijk</a>
                                     <a href="reservation/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
                                 @else
                                     <button type="button" class="btn btn-dark btn-sm" style="background:var(--earth-dark);border-color:var(--earth-dark);" data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Annuleer</button>
                                     @include('components.confirm-modal', ['uid' => 'res-'.$id, 'url' => 'reservation/'.$id.'/delete', 'message' => 'Deze reservering wordt geannuleerd.'])
+                                    <a href="reservation/{{ $id }}/show" class="btn btn-outline-dark btn-sm">Bekijk</a>
                                 @endauth
                             </div>
                         </div>

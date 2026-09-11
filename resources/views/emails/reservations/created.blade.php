@@ -19,7 +19,7 @@
     Mocht er toch nog iets zijn kunt u ons altijd bellen op 06 12345678.
     Of mailen naar contact@chezlaravel.com
 
-    <x-mail::button :url="url('/reservation/' . $reservation->id . '/view')">
+    <x-mail::button :url="url('/reservation/' . $reservation->id . '/show')">
         Bekijk reservering
     </x-mail::button>
 

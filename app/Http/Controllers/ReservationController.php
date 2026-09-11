@@ -74,6 +74,11 @@ class ReservationController extends Controller
         return view('reservation.create');
     }
 
+    public function show(Reservation $reservation)
+    {
+        return view('reservation.show', ['reservation' => $reservation]);
+    }
+
     public function view(Request $request)
     {
         if (Auth::check() && $request->input('email') == null) {
