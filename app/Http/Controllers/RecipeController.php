@@ -45,7 +45,7 @@ class RecipeController extends Controller
             'picture' => $picture_loc,
         ]);
 
-        return redirect("/recipe/{$id}/edit")->with('success', 'Het menu item is aangepast.');
+        return redirect('/menu')->with('success', 'Het menu item is aangepast.');
     }
 
     public function create(Request $request)

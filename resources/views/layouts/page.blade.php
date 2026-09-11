@@ -26,7 +26,8 @@
         @yield('content')
     </main>
 
-    <footer class="text-center py-4 mt-auto" style="border-top:1px solid var(--earth-light);font-family:'Cormorant Garamond',serif;color:var(--earth-mid);font-size:0.9rem;">
+    <footer class="text-center py-4 mt-auto"
+        style="border-top:1px solid var(--earth-light);font-family:'Cormorant Garamond',serif;color:var(--earth-mid);font-size:0.9rem;">
         &copy; Chez Laravel Est. 1974
     </footer>
 </body>

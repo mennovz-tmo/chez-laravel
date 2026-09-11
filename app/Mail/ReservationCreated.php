@@ -4,10 +4,10 @@ namespace App\Mail;
 
 use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class ReservationCreated extends Mailable
@@ -17,7 +17,9 @@ class ReservationCreated extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Reservation $reservation) {}
+    public function __construct(
+        public Reservation $reservation
+    ) {}
 
     /**
      * Get the message envelope.

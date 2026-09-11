@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Mail\ReservationCreated;
 use App\Mail\ReservationDeleteRequested;
 use App\Models\Reservation;
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use DateTime;
 
 class ReservationController extends Controller
 {
@@ -29,7 +29,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->with('success', 'De reservering is verwijderd');
         }
 
-        if (! $this->isDeletionAllowed($reservation_to_delete)) {
+        if (!$this->isDeletionAllowed($reservation_to_delete)) {
             return redirect('/reservation')->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen');
         }
 
@@ -49,7 +49,7 @@ class ReservationController extends Controller
             return redirect('/reservation')->withErrors('De link om te verwijderen is verlopen! Vraag opnieuw een verwijdering aan om een nieuwe link te krijgen.');
         }
 
-        if (! $reservation_to_delete->hasValidDeleteToken($delete_token)) {
+        if (!$reservation_to_delete->hasValidDeleteToken($delete_token)) {
             return redirect('/reservation')->withErrors('Deze link om een reservering te verwijderen is niet geldig!');
         }
 
@@ -84,7 +84,7 @@ class ReservationController extends Controller
             return view('reservation.view')->with('reservations', Reservation::get());
         }
 
-        if (! $request->isMethod('POST')) {
+        if (!$request->isMethod('POST')) {
             return view('reservation.view');
         }
 
@@ -123,17 +123,17 @@ class ReservationController extends Controller
         $max = DateTime::createFromFormat('H:i', '22:00');
         // dd([$input, $min, $max]);
         if ($input < $min || $input > $max) {
-            return redirect('/reservation')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
+            return redirect('/reservation/create')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
         }
         $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+1 day')->format('Y-m-d'));
         $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
         if ($current_date > $select_date) {
-            return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je niet meer reserveren. Je moet ten minste 1 dag van te voren reserveren.');
+            return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je niet meer reserveren. Je moet ten minste 1 dag van te voren reserveren.');
         }
         // Does not work for some reason?
         // $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+60 days')->format('Y-m-d'));
         // if ($current_date > $future_date) {
-        //     return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
+        //     return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         // }
 
         // Add seats check.
@@ -151,7 +151,7 @@ class ReservationController extends Controller
          */
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
             // $tmp = $chairs_used - $request->input('amount_of_people');
-            return redirect('/reservation')->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
+            return redirect('/reservation/create')->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
         }
 
         $reservation = Reservation::create([
@@ -167,7 +167,7 @@ class ReservationController extends Controller
 
         Mail::to($reservation->email)->send(new ReservationCreated($reservation));
 
-        return redirect('/reservation')->with('success', 'De reservering is gelukt! U krijgt een email met de details.');
+        return redirect('/reservation/create')->with('success', 'De reservering is gelukt! U krijgt een email met de details.');
     }
 
     public function edit(Request $request, int $id)

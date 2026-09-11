@@ -4,10 +4,10 @@ namespace App\Mail;
 
 use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class ReservationDeleteRequested extends Mailable
@@ -17,7 +17,10 @@ class ReservationDeleteRequested extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Reservation $reservation, public string $deleteToken) {}
+    public function __construct(
+        public Reservation $reservation,
+        public string $deleteToken
+    ) {}
 
     /**
      * Get the message envelope.
