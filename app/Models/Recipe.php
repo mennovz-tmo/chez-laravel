@@ -14,7 +14,7 @@ class Recipe extends Model
     protected function casts(): array
     {
         return [
-            'allergens' => 'array',
+            'allergens' => 'string',
             'price' => 'decimal:2',
         ];
     }
