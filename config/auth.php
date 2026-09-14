@@ -123,5 +123,5 @@ return [
     |
     */
 
-    'account_creation_enabled' => env('AUTH_ACCOUNT_CREATION_ENABLED', true),
+    'account_creation_enabled' => env('AUTH_ACCOUNT_CREATION_ENABLED', false),
 ];
