@@ -106,5 +106,9 @@
             background-color: var(--earth-rust);
             color: #fff;
         }
+
+        ::placeholder {
+            opacity: 0.25 !important;
+        }
     </style>
 </head>
