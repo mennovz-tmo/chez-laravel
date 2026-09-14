@@ -11,12 +11,14 @@
                     <div class="col-md-3">
                         <label for="start" class="form-label">Van</label>
                         <input type="date" class="form-control" id="start" name="start"
-                            value="{{ old('start', $start ?? '') }}"
+                            value="{{ old('start', $start ?? '') }}" min="{{ now()->format('Y-m-d') }}"
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}"
                             style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                     </div>
                     <div class="col-md-3">
                         <label for="end" class="form-label">Tot</label>
                         <input type="date" class="form-control" id="end" name="end" value="{{ old('end', $end ?? '') }}"
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}"
                             style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                     </div>
                     <div class="col-md-3">
@@ -27,8 +29,8 @@
                     </div>
                     <div class="col-md-3">
                         <label for="email" class="form-label">Emailadres</label>
-                        <input type="text" class="form-control" id="email" name="email"
-                            placeholder="john@example.com" value="{{ old('email', $email ?? '') }}"
+                        <input type="text" class="form-control" id="email" name="email" placeholder="john@example.com"
+                            value="{{ old('email', $email ?? '') }}"
                             style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                     </div>
                 </div>
