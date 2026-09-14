@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class Register extends Controller
@@ -16,7 +17,7 @@ class Register extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (! Config::get('auth.account_creation_enabled')) {
+        if (!Config::get('auth.account_creation_enabled')) {
             return redirect('/')->withErrors('Het maken van accounts is uitgezet door de website beheerder.');
         }
 
@@ -27,16 +28,20 @@ class Register extends Controller
         ]);
 
         $users = User::all();
-        $user = (empty($users)) ? User::create([
-            'name' => $validator['name'],
-            'email' => $validator['email'],
-            'password' => Hash::make($validator['password']),
-            'role' => 'owner',
-        ]) : User::create([
-            'name' => $validator['name'],
-            'email' => $validator['email'],
-            'password' => Hash::make($validator['password']),
-        ]);
+        if (empty($users)) {
+            $user = User::create([
+                'name' => $validator['name'],
+                'email' => $validator['email'],
+                'password' => Hash::make($validator['password']),
+            ]);
+            $user->update(['role', 'owner']);
+        } else {
+            $user = User::create([
+                'name' => $validator['name'],
+                'email' => $validator['email'],
+                'password' => Hash::make($validator['password']),
+            ]);
+        }
 
         Auth::login($user);
 
