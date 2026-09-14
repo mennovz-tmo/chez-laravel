@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
+use function in_array;
+
 class ReservationController extends Controller
 {
     public function delete(Request $request, Reservation $reservation, ?string $delete_token = null)
@@ -81,27 +83,56 @@ class ReservationController extends Controller
 
     public function view(Request $request)
     {
-        if (Auth::check() && $request->input('email') == null && isStaff()) {
-            // $reservation_details = json_decode(json_encode(DB::select('select * from reservations order by date desc, arrival desc')), true);
+        $query = Reservation::query();
 
-            return view('reservation.view')->with('reservations', Reservation::get());
+        if (Auth::check() && $request->input('email') == null && isStaff() && $request->input('start') == null && $request->input('end') == null && $request->input('name') == null) {
+            return view('reservation.view')->with('reservations', $query->orderByDesc('date')->orderByDesc('arrival')->get());
         }
 
-        if (! $request->isMethod('POST')) {
-            return view('reservation.view');
+        $method = $request->getMethod();
+        if (in_array($method, ['POST', 'GET']) && ($request->filled('start') || $request->filled('end') || $request->filled('name') || $request->filled('email'))) {
+            $validated = $request->validate([
+                'start' => ['nullable', 'date', 'date_format:Y-m-d'],
+                'end' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:start'],
+                'email' => ['nullable', 'email', 'min:5'],
+                'name' => ['nullable', 'string', 'min:1', 'max:255'],
+            ], [
+                'end.after_or_equal' => 'De einddatum moet gelijk zijn aan of na de startdatum.',
+            ]);
+
+            if (! Auth::check() && ! $request->filled('name') && ! $request->filled('email')) {
+                return redirect('/reservation')->withErrors('Je moet zoeken met email of exacte naam als gast!');
+            }
+
+            if ($request->filled('start') && $request->filled('end')) {
+                $query->whereBetween('date', [$validated['start'], $validated['end']]);
+            } elseif ($request->filled('start')) {
+                $query->where('date', $validated['start']);
+            }
+
+            if ($request->filled('name')) {
+                if (Auth::check()) {
+                    $query->where('name', 'like', '%'.$validated['name'].'%');
+                } else {
+                    $query->where('name', '=', $validated['name']);
+                }
+            }
+
+            if ($request->filled('email')) {
+                $query->where('email', $validated['email']);
+            }
+
+            $reservations = $query->orderByDesc('date')->orderByDesc('arrival')->get();
+
+            return view('reservation.view')
+                ->with('reservations', $reservations)
+                ->with('email', $request->input('email'))
+                ->with('name', $request->input('name'))
+                ->with('start', $request->input('start'))
+                ->with('end', $request->input('end'));
         }
 
-        $validator = $request->validate([
-            'email' => ['required', 'email', 'min:5'],
-        ]);
-
-        $reservation_details = Reservation::where('email', $request->input('email'))
-            ->orderByDesc('date')
-            ->orderByDesc('arrival')
-            ->limit(10)
-            ->get();
-
-        return view('reservation.view')->with('reservations', $reservation_details)->with('email', $request->input('email'));
+        return view('reservation.view');
     }
 
     public function create(Request $request)
