@@ -33,15 +33,17 @@
                     </div>
                 </div>
                 <div class="row g-2 mt-2">
-                    <div class="col-md-6">
+                    <div class="@auth col-md-6 @endauth @guest col-md-12 @endguest">
                         <button type="submit" class="btn btn-primary w-100">Zoek</button>
                     </div>
-                    <div class="col-md-6 d-flex gap-2">
-                        <a href="/reservation?start={{ now()->format('Y-m-d') }}&end={{ now()->format('Y-m-d') }}"
-                            class="btn btn-outline-dark w-50">Vandaag</a>
-                        <a href="/reservation?start={{ now()->addDay()->format('Y-m-d') }}&end={{ now()->addDay()->format('Y-m-d') }}"
-                            class="btn btn-outline-dark w-50">Morgen</a>
-                    </div>
+                    @auth
+                        <div class="col-md-6 d-flex gap-2">
+                            <a href="/reservation?start={{ now()->format('Y-m-d') }}&end={{ now()->format('Y-m-d') }}"
+                                class="btn btn-outline-dark w-50">Vandaag</a>
+                            <a href="/reservation?start={{ now()->addDay()->format('Y-m-d') }}&end={{ now()->addDay()->format('Y-m-d') }}"
+                                class="btn btn-outline-dark w-50">Morgen</a>
+                        </div>
+                    @endauth
                 </div>
             </form>
         </div>
