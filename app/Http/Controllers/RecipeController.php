@@ -99,6 +99,8 @@ class RecipeController extends Controller
 
     public function welcome()
     {
-        return view('welcome');
+        $recipes = Recipe::inRandomOrder()->limit(3)->get();
+
+        return view('welcome', ['recipes' => $recipes]);
     }
 }
