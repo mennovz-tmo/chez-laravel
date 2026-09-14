@@ -27,14 +27,14 @@ class Register extends Controller
             'password' => 'required|string|min:12|confirmed',
         ]);
 
-        $users = User::all();
-        if (empty($users)) {
+        $hasOwner = User::where('role', 'owner')->exists();
+        if (! $hasOwner) {
             $user = User::create([
                 'name' => $validator['name'],
                 'email' => $validator['email'],
                 'password' => Hash::make($validator['password']),
             ]);
-            $user->update(['role', 'owner']);
+            $user->update(['role' => 'owner']);
         } else {
             $user = User::create([
                 'name' => $validator['name'],
