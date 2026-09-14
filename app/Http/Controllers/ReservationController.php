@@ -21,7 +21,7 @@ class ReservationController extends Controller
         }
 
         // Ingelogde medewerkers mogen direct verwijderen.
-        if (Auth::check()) {
+        if (Auth::check() && isStaff()) {
             $reservation->delete();
 
             return redirect('/reservation')->with('success', 'De reservering is verwijderd');
@@ -81,7 +81,7 @@ class ReservationController extends Controller
 
     public function view(Request $request)
     {
-        if (Auth::check() && $request->input('email') == null) {
+        if (Auth::check() && $request->input('email') == null && isStaff()) {
             // $reservation_details = json_decode(json_encode(DB::select('select * from reservations order by date desc, arrival desc')), true);
 
             return view('reservation.view')->with('reservations', Reservation::get());

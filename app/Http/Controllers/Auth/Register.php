@@ -16,7 +16,7 @@ class Register extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (Config::get('auth.account_creation_enabled') == false) {
+        if (Config::get('auth.account_creation_enabled')) {
             return redirect('/')->withErrors('Het maken van accounts is uitgezet door de website beheerder.');
         }
 
@@ -32,8 +32,8 @@ class Register extends Controller
             'password' => Hash::make($validator['password']),
         ]);
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect('/')->with('success', 'hej! Account created!');
+        return redirect('/')->with('success', 'Hej! Account created!');
     }
 }
