@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\Auth\Register;
 use App\Http\Controllers\ErrorController;
+use App\Http\Controllers\OpeningDatetimeController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
@@ -60,5 +61,19 @@ Route::controller(ReservationController::class)
                 Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
                 Route::match(['get', 'post'], '/edit', 'edit');
                 Route::get('/show', 'show');
+            });
+    });
+
+Route::controller(OpeningDatetimeController::class)
+    ->prefix('opening-datetime')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::post('/create', 'create');
+        Route::controller(OpeningDatetimeController::class)
+            ->prefix('{openingDatetime}')
+            ->group(function () {
+                Route::get('/delete', 'delete');
+                Route::match(['get', 'post'], '/edit', 'edit');
             });
     });

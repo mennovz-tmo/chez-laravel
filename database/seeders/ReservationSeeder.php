@@ -24,9 +24,9 @@ class ReservationSeeder extends Seeder
             'phone_number' => fake()->phoneNumber(),
             'email' => fake()->safeEmail(),
             'comment' => fake()->sentence(),
-            'date' => fake()->date(),
+            'date' => fake()->date('Y-m-d'),
             'arrival' => fake()->time('H:i'),
-            'departure' => fake()->time(),
+            'departure' => fake()->time('H:i'),
         ]);
     }
 }

@@ -23,10 +23,10 @@ class ReservationFactory extends Factory
             'amount_of_people' => fake()->numberBetween(1, 16),
             'phone_number' => fake()->phoneNumber(),
             'email' => fake()->safeEmail(),
-            'comment' => fake()->sentence(),
-            'date' => fake()->date(),
-            'arrival' => fake()->time(),
-            'departure' => fake()->time(),
+            'comment' => fake()->sentence(8),
+            'date' => fake()->date('Y-m-d'),
+            'arrival' => fake()->time('H:i'),
+            'departure' => fake()->time('H:i'),
         ];
     }
 }

@@ -137,7 +137,6 @@ class ReservationController extends Controller
 
     public function create(Request $request)
     {
-        // dd($request->input('date'));
         $validator = $request->validate([
             'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
             'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
@@ -146,7 +145,6 @@ class ReservationController extends Controller
             'comment' => ['nullable', 'string', 'max:1024'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
             'arrival' => ['required', 'string', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
-            // 'arrival' => ['required', 'between:1600,2200'], // Would work but I don't send an integer to the server. Would require extra javascript on the client.
         ],
             [
                 'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
@@ -155,10 +153,10 @@ class ReservationController extends Controller
         $input = DateTime::createFromFormat('H:i', $request->input('arrival'));
         $min = DateTime::createFromFormat('H:i', '16:00');
         $max = DateTime::createFromFormat('H:i', '22:00');
-        // dd([$input, $min, $max]);
         if ($input < $min || $input > $max) {
             return redirect('/reservation/create')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
         }
+
         $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+1 day')->format('Y-m-d'));
         $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+61 day')->format('Y-m-d'));
         $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
@@ -168,26 +166,9 @@ class ReservationController extends Controller
         if ($future_date < $select_date) {
             return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         }
-        // Does not work for some reason?
-        // $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+60 days')->format('Y-m-d'));
-        // if ($current_date > $future_date) {
-        //     return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
-        // }
+        // TODO: Add logic to check if it has custom opening hours on the date or that the restaurant is closed.
 
-        // Add seats check.
-        // $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ?;', []);
         $chairs_used = Reservation::where('date', '=', $request->input('date'))->sum('amount_of_people');
-        // dd($chairs_used);
-        // $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'];  // I couldn't find any other way to turn it into an integer.
-        // dd($chairs_used);
-        // dd($chairs_used + $request->input('amount_of_people'));
-        // dd(Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')));
-        // All this could've been avoidded if I ran:
-
-        /*
-         * php artisan config:clear
-         * php artisan cache:clear
-         */
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
             // $tmp = $chairs_used - $request->input('amount_of_people');
             return redirect('/reservation/create')->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
@@ -234,14 +215,18 @@ class ReservationController extends Controller
         if ($input < $min || $input > $max) {
             return redirect('/reservation')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
         }
+
         $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+24 hours')->format('Y-m-d'));
+        $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+61 day')->format('Y-m-d'));
         $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
         if ($current_date > $select_date) {
             return redirect('/reservation')->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.');
         }
+        if ($future_date < $select_date) {
+            return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je de reservering nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
+        }
+        // TODO: Add logic to check if it has custom opening hours on the date or that the restaurant is closed.
 
-        // $chairs_used = DB::select('select sum(amount_of_people) from reservations where date = ? and id != ?;', [$request->input('date'), $reservation->id]);
-        // $chairs_used = json_decode(json_encode($chairs_used), true)[0]['sum'] ?? 0;
         $chairs_used = Reservation::where('date', '=', $reservation->date)->where('id', '!=', $reservation->id)->sum('amount_of_people') ?? 0;
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
             return redirect('/reservation')->withErrors('De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!');

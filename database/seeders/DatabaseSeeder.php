@@ -22,9 +22,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'mail@example.com',
         ]);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 7; $i++) {
             $this->call(RecipeSeeder::class);
             $this->call(ReservationSeeder::class);
+            $this->call(OpeningDatetimeSeeder::class);
         }
+        $this->call(WeeklyScheduleSeeder::class);
     }
 }
