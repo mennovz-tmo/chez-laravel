@@ -10,3 +10,8 @@ function generate_reservation_number(): string
 
     return $reservation_number;
 }
+
+function isStaff(): bool
+{
+    return auth()->user()->role == 'owner' || auth()->user()->role == 'staff';
+}

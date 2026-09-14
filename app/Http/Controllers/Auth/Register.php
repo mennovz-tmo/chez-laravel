@@ -26,7 +26,13 @@ class Register extends Controller
             'password' => 'required|string|min:12|confirmed',
         ]);
 
-        $user = User::create([
+        $users = User::all();
+        $user = (empty($users)) ? User::create([
+            'name' => $validator['name'],
+            'email' => $validator['email'],
+            'password' => Hash::make($validator['password']),
+            'role' => 'owner',
+        ]) : User::create([
             'name' => $validator['name'],
             'email' => $validator['email'],
             'password' => Hash::make($validator['password']),
