@@ -35,11 +35,11 @@
                     <div class="col-md-6">
                         @php
                             $min = new Datetime()->modify('+1 day');
-                            $max = $min->modify('+28 days');
+                            $max = new Datetime()->modify('+61 days');
                         @endphp
                         <label for="date" class="form-label">Datum</label>
                         <input required type="date" class="form-control" name="date" id="date"
-                            min="{{ $min->format('d-m-Y') }}" value="{{ old('date') }}"
+                            min="{{ $min->format('Y-m-d') }}" max="{{ $max->format('Y-m-d') }}" value="{{ old('date') }}"
                             style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                     </div>
                     <div class="col-md-6">
