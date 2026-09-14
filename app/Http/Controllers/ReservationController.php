@@ -129,9 +129,13 @@ class ReservationController extends Controller
             return redirect('/reservation/create')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
         }
         $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+1 day')->format('Y-m-d'));
+        $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+61 day')->format('Y-m-d'));
         $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
         if ($current_date > $select_date) {
             return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je niet meer reserveren. Je moet ten minste 1 dag van te voren reserveren.');
+        }
+        if ($future_date < $select_date) {
+            return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         }
         // Does not work for some reason?
         // $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+60 days')->format('Y-m-d'));
