@@ -32,8 +32,8 @@ class Register extends Controller
             'password' => Hash::make($validator['password']),
         ]);
 
-        // Auth::login($user);
+        Auth::login($user);
 
-        return redirect('/')->with('success', 'Hej! Account created!');
+        return redirect('/')->with('success', 'hej! Account created!');
     }
 }
