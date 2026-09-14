@@ -23,7 +23,7 @@
                     <div class="col-md-6">
                         <label for="phone_number" class="form-label">Telefoon</label>
                         <input required type="tel" class="form-control" name="phone_number" id="phone_number"
-                            placeholder="06 12345678" pattern="[0-9]{2} [0-9]{8}" value="{{ old('phone_number') }}"
+                            placeholder="Telefoon" value="{{ old('phone_number') }}"
                             style="border-radius:2px;background:var(--earth-paper);border-color:var(--earth-light);color:var(--earth-dark);">
                     </div>
                     <div class="col-md-6">

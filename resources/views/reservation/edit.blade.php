@@ -21,8 +21,8 @@
         </div>
         <div class="m-1">
             <label for="pass" class="form-label">Wat is je telefoon nummer?</label>
-            <input required type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="06 12345678"
-                pattern="[0-9]{2} [0-9]{8}" value="{{ $current_data['phone_number'] }}">
+            <input required type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="Telefoon"
+                value="{{ $current_data['phone_number'] }}">
         </div>
         <div class="m-1">
             <label for="pass" class="form-label">Voor hoeveel mensen reserveer je?</label>
