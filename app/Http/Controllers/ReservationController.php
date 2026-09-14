@@ -110,7 +110,7 @@ class ReservationController extends Controller
         $validator = $request->validate([
             'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
             'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
-            'phone_number' => ['required', 'phone:INTERNATIONAL,NL,mobile', 'min:10', 'max:20'],
+            'phone_number' => ['required', 'numeric'],
             'email' => ['required', 'email'],
             'comment' => ['nullable', 'string', 'max:1024'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
@@ -187,7 +187,7 @@ class ReservationController extends Controller
         $validator = $request->validate([
             'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
             'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
-            'phone_number' => ['required', 'phone:NL,mobile', 'min:10', 'max:20'],
+            'phone_number' => ['required', 'numeric', 'min:10', 'max:20'],
             'email' => ['required', 'email'],
             'comment' => ['nullable', 'string', 'max:1024'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
