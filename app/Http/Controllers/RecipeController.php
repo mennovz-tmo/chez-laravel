@@ -28,7 +28,7 @@ class RecipeController extends Controller
 
         $picture_loc = $recipe->picture;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
-            $hash = hash('sha3-224', $request->file('picture')->path());
+            $hash = hash('sha3-224', file_get_contents($request->file('picture')->path()));
             $name = str_replace(' ', '_', $request->file('picture')->getClientOriginalName());
             $request->file('picture')->storeAs('./uploads/', "{$hash}-{$name}", 'public');
             $picture_loc = "/storage/uploads/{$hash}-{$name}";
@@ -60,7 +60,7 @@ class RecipeController extends Controller
         $picture_loc = '';
         if ($request->file('picture')->isValid()) {
             // dd(hash_algos());
-            $hash = hash('sha3-224', $request->file('picture')->path());  // Get a unique filename
+            $hash = hash('sha3-224', file_get_contents($request->file('picture')->path()));  // Get a unique filename
             // $hash = $request->file('picture')->hashName();
             $name = $request->file('picture')->getClientOriginalName();  // Get the original filename
             $name = str_replace(' ', '_', $name);  // Remove spaces for compatability
