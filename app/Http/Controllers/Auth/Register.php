@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,10 +16,6 @@ class Register extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (!Config::get('auth.account_creation_enabled')) {
-            return redirect('/')->withErrors('Het maken van accounts is uitgezet door de website beheerder.');
-        }
-
         $validator = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
