@@ -8,6 +8,7 @@ use App\Http\Controllers\OpeningDatetimeController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AccountRegistrationState;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -19,8 +20,8 @@ Route::prefix('auth')
             ->group(function () {
                 Route::post('/login', Login::class)->name('login');
                 Route::get('/login', 'login');
-                Route::post('/register', Register::class)->name('register');
-                Route::get('/signup', 'signup');
+                Route::post('/register', Register::class)->name('register')->middleware(AccountRegistrationState::class);
+                Route::get('/signup', 'signup')->middleware(AccountRegistrationState::class);
             });
     });
 
