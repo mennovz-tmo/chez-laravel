@@ -26,12 +26,9 @@ class RecipeController extends Controller
             'picture' => ['nullable', 'image'],
         ]);
 
-        $picture_loc = $recipe->picture;
+        $picture_loc = '/storage/';
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
-            $hash = hash('sha3-224', file_get_contents($request->file('picture')->path()));
-            $name = str_replace(' ', '_', $request->file('picture')->getClientOriginalName());
-            $request->file('picture')->storeAs('./uploads/', "{$hash}-{$name}", 'public');
-            $picture_loc = "/storage/uploads/{$hash}-{$name}";
+            $picture_loc .= $request->image('picture')->toAvif()->store('images', 'public');
         }
 
         $recipe->update([
@@ -52,22 +49,14 @@ class RecipeController extends Controller
             'description_short' => ['required', 'min:1', 'max:1024'],
             'allergens' => ['required', 'string', 'min:1'],
             'price' => ['required', 'decimal:2', 'min:0.01'],
-            // 'picture' => ['required', '', 'min:3']
-            // ^^^ My brain I thought it was already a string ready for saving here. :) LOL.
             'picture' => ['required', 'image'],
         ]);
 
-        $picture_loc = '';
+        $picture_loc = '/storage/';
         if ($request->file('picture')->isValid()) {
-            // dd(hash_algos());
-            $hash = hash('sha3-224', file_get_contents($request->file('picture')->path()));  // Get a unique filename
-            // $hash = $request->file('picture')->hashName();
-            $name = $request->file('picture')->getClientOriginalName();  // Get the original filename
-            $name = str_replace(' ', '_', $name);  // Remove spaces for compatability
-            // $extension = $request->file('picture')->extension();
-            $request->file('picture')->storeAs('./uploads/', "{$hash}-{$name}", 'public');
-            $picture_loc = "/storage/uploads/{$hash}-{$name}";
+            $picture_loc .= $request->image('picture')->toAvif()->store('images', 'public');
         }
+
         Recipe::fillAndInsert([
             'name' => $request->input('name'),
             'description_short' => $request->input('description_short'),
