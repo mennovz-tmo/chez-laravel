@@ -152,11 +152,32 @@ class ReservationController extends Controller
                 'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
             ]);
 
-        $input = DateTime::createFromFormat('H:i', $request->input('arrival'));
-        $min = DateTime::createFromFormat('H:i', '16:00');
-        $max = DateTime::createFromFormat('H:i', '22:00');
-        if ($input < $min || $input > $max) {
-            return redirect('/reservation/create')->withErrors('De ingevoerde tijd is niet tussen 16:00 en 22:00');
+        $opening_datetime = OpeningDatetime::select(['open', 'opening', 'closing'])->where('date', '=', $request->input('date'))->limit(1)->get();
+        if ($opening_datetime->count() > 0) {
+            $opening_datetime = $opening_datetime[0];
+            if (! $opening_datetime['open']) {
+                return redirect('/reservation/create')->withErrors('De ingevoerde datum zijn wij helaas gesloten.');
+            }
+            $opening_dt = new DateTime($opening_datetime['opening']);
+            $closing_dt = new DateTime($opening_datetime['closing']);
+            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
+            if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
+                return redirect('/reservation/create')->withErrors("De ingevoerde tijd ligt niet tussen onze speciale openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.");
+            }
+        }
+        $requested_day = new DateTime($request->input('date'))->format('N') - 1;
+        $default_schedule = WeeklySchedule::select('is_open', 'opening', 'closing')->where('day_of_week', '=', $requested_day)->limit(1)->get();
+        if ($default_schedule->count() > 0) {
+            $default_schedule = $default_schedule[0];
+            if (! $default_schedule['is_open']) {
+                return redirect('/reservation/create')->withErrors('De ingevoerde datum zijn wij helaas gesloten.');
+            }
+            $opening_dt = new DateTime($default_schedule['opening']);
+            $closing_dt = new DateTime($default_schedule['closing']);
+            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
+            if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
+                return redirect('/reservation/create')->withErrors("De ingevoerde tijd ligt niet tussen onze openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.");
+            }
         }
 
         $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+1 day')->format('Y-m-d'));
@@ -168,7 +189,6 @@ class ReservationController extends Controller
         if ($future_date < $select_date) {
             return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         }
-        // TODO: Add logic to check if it has custom opening hours on the date or that the restaurant is closed.
 
         $chairs_used = Reservation::where('date', '=', $request->input('date'))->sum('amount_of_people');
         if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
@@ -247,7 +267,7 @@ class ReservationController extends Controller
             return redirect($place)->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.');
         }
         if ($future_date < $select_date) {
-            return redirect('/reservation/create')->withErrors('Voor de ingevoerde datum kan je de reservering nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
+            return redirect($place)->withErrors('Voor de ingevoerde datum kan je de reservering nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         }
 
         $chairs_used = Reservation::where('date', '=', $reservation->date)->where('id', '!=', $reservation->id)->sum('amount_of_people') ?? 0;
@@ -268,6 +288,6 @@ class ReservationController extends Controller
 
         Mail::to($reservation->email)->send(new ReservationCreated($reservation));
 
-        return redirect($place)->with('success', 'De reservering is aangepast! U krijgt een email met de nieuwe details.');
+        return redirect('/reservation')->with('success', 'De reservering is aangepast! U krijgt een email met de nieuwe details.');
     }
 }
