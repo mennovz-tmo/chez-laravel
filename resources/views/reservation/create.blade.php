@@ -38,9 +38,12 @@
                             class="form-input">
                     </div>
                     <div class="col-md-6">
-                        <label for="arrival" class="form-label">Tijd (16:00 - 22:00)</label>
-                        <input required type="time" class="form-control" name="arrival" id="arrival" min="16:00" max="22:00"
+                        <label for="arrival" class="form-label">Tijd</label><br>
+                        <input required type="time" class="form-control" name="arrival" id="arrival"
                             value="{{ old('arrival') }}" class="form-input">
+                    </div>
+                    <div class="col-12">
+                        <p class="text-end text-small-muted m-0 p-0">De standaard openingstijden zijn: {{ $weekly_opening_time }} tot {{ $weekly_closing_time }}*</p>
                     </div>
                     <div class="col-12">
                         <label for="comment" class="form-label">Opmerking</label>
@@ -53,6 +56,14 @@
             <div class="mt-3">
                 <p>Heb je al een reservering? <a href="/reservation">Bekijk hier</a>.</p>
             </div>
+            
+            @guest
+                <div class="mt-3 card p-4 shadow-sm card-body-container">
+                    <p class="m-0 p-0">
+                        Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze <a href="/opening-datetime">hier</a>
+                    </p>
+                </div>
+            @endguest
         </div>
     </div>
 @endsection

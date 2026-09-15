@@ -20,7 +20,7 @@ class WeeklyScheduleFactory extends Factory
         return [
             'day_of_week' => 0,
             'is_open' => true,
-            'opening' => '11:00',
+            'opening' => '16:00',
             'closing' => '22:00',
         ];
     }

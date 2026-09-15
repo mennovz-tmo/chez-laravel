@@ -66,11 +66,12 @@ Route::controller(ReservationController::class)
 
 Route::controller(OpeningDatetimeController::class)
     ->prefix('opening-datetime')
-    ->middleware('auth')
     ->group(function () {
         Route::get('/', 'index');
-        Route::post('/create', 'create');
+        Route::post('/create', 'create')
+            ->middleware('auth');
         Route::controller(OpeningDatetimeController::class)
+            ->middleware('auth')
             ->prefix('{openingDatetime}')
             ->group(function () {
                 Route::get('/delete', 'delete');

@@ -10,7 +10,7 @@ class OpeningDatetimeController extends Controller
 {
     public function index()
     {
-        return view('opening_datetime.index', ['items' => OpeningDatetime::all()]);
+        return view('opening_datetime.index', ['items' => OpeningDatetime::all()->sortBy('date')]);
     }
 
     public function create(Request $request)
@@ -28,7 +28,7 @@ class OpeningDatetimeController extends Controller
             return redirect('/opening-datetime')->withErrors('De opening is na de sluiting.');
         }
 
-        if ($request->input('open') && ! $request->filled('opening') || ! $request->filled('closing')) {
+        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
             return redirect('/opening-datetime')->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
@@ -49,7 +49,7 @@ class OpeningDatetimeController extends Controller
             'closing' => 'nullable|date_format:H:i',
         ]);
 
-        if ($request->input('open') && ! $request->filled('opening') || ! $request->filled('closing')) {
+        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
             return redirect("/opening-datetime/$openingDatetime->id/edit")->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
