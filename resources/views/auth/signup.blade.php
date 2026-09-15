@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-6">
+        <div class="col-md-8 col-lg-8">
             <div class="card p-4 shadow-sm card-container">
                 <h2 class="mb-4 display-5 section-title">Account aanmaken</h2>
                 <form action="register" method="post">

@@ -9,19 +9,7 @@
     </header>
 
     <main class="container py-5 flex-grow-1">
-        @if ($errors->any())
-            <div class="m-2 alert alert-danger alert-danger-custom">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @elseif (Session::has('success'))
-            <div class="m-2 alert alert-success alert-success-custom">
-                {{ Session::get('success') }}
-            </div>
-        @endif
+        @include('components.error')
 
         @yield('content')
     </main>
