@@ -22,7 +22,7 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'date',
+            'date' => 'date:Y-m-d',
             'delete_token_expires_at' => 'datetime',
         ];
     }
