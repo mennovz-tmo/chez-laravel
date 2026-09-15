@@ -5,7 +5,7 @@
         <div class="col-md-8 col-lg-8">
             <div class="card p-4 shadow-sm card-container">
                 <h2 class="mb-4 display-5 section-title">Account aanmaken</h2>
-                <form action="register" method="post">
+                <form action="{{ route('register.submit') }}" method="post">
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Naam</label>
@@ -30,7 +30,7 @@
                     <button type="submit" class="btn btn-primary w-100">Registreer</button>
                 </form>
                 <div class="mt-4 text-center">
-                    <p class="mb-0">Al een account? <a href="login">Log in</a>.</p>
+                    <p class="mb-0">Al een account? <a href="{{ route('login') }}">Log in</a>.</p>
                 </div>
             </div>
         </div>

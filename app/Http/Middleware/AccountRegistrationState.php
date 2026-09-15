@@ -17,7 +17,7 @@ class AccountRegistrationState
     public function handle(Request $request, Closure $next): Response
     {
         if (! Config::get('auth.account_creation_enabled')) {
-            return redirect('/')->withErrors('Account registration has been disabled by the server administrator!');
+            return redirect()->route('welcome')->withErrors('Account registration has been disabled by the server administrator!');
         }
 
         return $next($request);

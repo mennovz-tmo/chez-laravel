@@ -15,7 +15,7 @@ class RecipeController extends Controller
     public function edit(Request $request, Recipe $recipe)
     {
         if ($request->isMethod('GET')) {
-            return view('recipe.edit')->with('current_data', $recipe->toArray());
+            return view('recipe.edit', ['recipe' => $recipe->id])->with('current_data', $recipe->toArray());
         }
 
         $request->validate([
@@ -39,7 +39,7 @@ class RecipeController extends Controller
             'picture' => $picture_loc,
         ]);
 
-        return redirect('/menu')->with('success', 'Het menu item is aangepast.');
+        return redirect()->route('menu')->with('success', 'Het menu item is aangepast.');
     }
 
     public function create(Request $request)
@@ -65,7 +65,7 @@ class RecipeController extends Controller
             'picture' => $picture_loc,
         ]);
 
-        return redirect('/menu')->with('success', 'Het menu item is toegevoegd.');
+        return redirect()->route('menu')->with('success', 'Het menu item is toegevoegd.');
     }
 
     public function delete(Request $request, Recipe $recipe)
@@ -73,9 +73,9 @@ class RecipeController extends Controller
         if ($recipe != null) {
             $recipe->delete();
 
-            return redirect('/menu')->with('success', 'Het menu items is verwijderd.');
+            return redirect()->route('menu')->with('success', 'Het menu items is verwijderd.');
         } else {
-            return redirect('/menu')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
+            return redirect()->route('menu')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
         }
     }
 

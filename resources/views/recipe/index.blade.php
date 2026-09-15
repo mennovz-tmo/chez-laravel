@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 mb-4 section-title">Nieuw recept</h1>
-            <form action="recipe/create" method="post" enctype="multipart/form-data"
+            <form action="{{ route('recipe.store') }}" method="post" enctype="multipart/form-data"
                 class="card p-4 shadow-sm card-body-container">
                 @csrf
                 <div class="mb-3">

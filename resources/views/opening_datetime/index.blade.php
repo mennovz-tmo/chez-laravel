@@ -9,9 +9,9 @@
                 <th>Open</th>
                 <th>Opening</th>
                 <th>Sluiting</th>
-                @auth
+                @if (isStaff())
                     <th>Acties</th>
-                @endauth
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -29,23 +29,23 @@
                             {{ $item->closing->format('H:i') }}
                         @endif
                     </td>
-                    @auth
+                    @if (isStaff())
                         <td>
-                            <a href="/opening-datetime/{{ $item->id }}/edit" class="btn btn-sm btn-outline-dark">Bewerk</a>
+                            <a href="{{ route('opening-datetime.edit', ['openingDatetime' => $item->id]) }}" class="btn btn-sm btn-outline-dark">Bewerk</a>
                             <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                                 data-bs-target="#confirmModal-del{{ $item->id }}">Verwijder</button>
-                            @component('components.confirm-modal', ['uid' => 'del' . $item->id, 'url' => '/opening-datetime/' . $item->id . '/delete', 'message' => 'Verwijder deze datum?'])
+                            @component('components.confirm-modal', ['uid' => 'del' . $item->id, 'url' => route('opening-datetime.delete', ['openingDatetime' => $item->id]), 'message' => 'Verwijder deze datum?'])
                             @endcomponent
                         </td>
-                    @endauth
+                    @endif
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    @auth
+    @if (isStaff())
         <h2 class="section-title">Nieuw</h2>
-        <form method="post" action="/opening-datetime/create" class="card p-4 shadow-sm card-body-container">
+        <form method="post" action="{{ route('opening-datetime.create') }}" class="card p-4 shadow-sm card-body-container">
             @csrf
             <div class="row g-3">
                 <div class="col-md-4">
@@ -70,5 +70,5 @@
             </div>
             <button type="submit" class="btn btn-dark btn-rust mt-4">Toevoegen</button>
         </form>
-    @endauth
+    @endif
 @endsection

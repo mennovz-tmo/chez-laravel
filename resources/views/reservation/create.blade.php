@@ -4,18 +4,20 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 mb-4 section-title">Reserveren</h1>
-            <form action="create" method="post" class="card p-4 shadow-sm card-body-container">
+            <form action="{{ route('reservation.store') }}" method="post" class="card p-4 shadow-sm card-body-container">
                 @csrf
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="name" class="form-label">Naam</label>
                         <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe"
-                            value="{{ old('name') }}" class="form-input">
+                            value="@if (Auth::check() && !isStaff() && old('name') == null){{ Auth::user()->name }}@else{{ old('name') }}@endif" class="form-input">
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <input required type="email" class="form-control" name="email" id="email"
-                            placeholder="mail@example.com" value="{{ old('email') }}" class="form-input">
+                            placeholder="mail@example.com"
+                            value="@if (Auth::check() && !isStaff() && old('email') == null){{ Auth::user()->email }}@else{{ old('email') }}@endif"
+                            class="form-input">
                     </div>
                     <div class="col-md-6">
                         <label for="phone_number" class="form-label">Telefoon</label>
@@ -43,7 +45,8 @@
                             value="{{ old('arrival') }}" class="form-input">
                     </div>
                     <div class="col-12">
-                        <p class="text-end text-small-muted m-0 p-0">De standaard openingstijden zijn: {{ $weekly_opening_time }} tot {{ $weekly_closing_time }}*</p>
+                        <p class="text-end text-small-muted m-0 p-0">De standaard openingstijden zijn:
+                            {{ $weekly_opening_time }} tot {{ $weekly_closing_time }}*</p>
                     </div>
                     <div class="col-12">
                         <label for="comment" class="form-label">Opmerking</label>
@@ -54,16 +57,17 @@
                 <button type="submit" class="btn btn-primary mt-4">Reserveren</button>
             </form>
             <div class="mt-3">
-                <p>Heb je al een reservering? <a href="/reservation">Bekijk hier</a>.</p>
+                <p>Heb je al een reservering? <a href="{{ route('reservation.view') }}">Bekijk hier</a>.</p>
             </div>
-            
-            @guest
+
+            @if (Auth::check() && !isStaff() || !Auth::check())
                 <div class="mt-3 card p-4 shadow-sm card-body-container">
                     <p class="m-0 p-0">
-                        Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze <a href="/opening-datetime">hier</a>
+                        Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze <a
+                            href="{{ route('opening-datetime.view') }}">hier</a>
                     </p>
                 </div>
-            @endguest
+            @endif
         </div>
     </div>
 @endsection

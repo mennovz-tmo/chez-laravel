@@ -11,7 +11,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 mb-4 section-title">Reserveren</h1>
-            <form action="edit" method="post" class="card p-4 shadow-sm card-body-container">
+            <form action="{{ route('reservation.edit', ['reservation' => $current_data['id']]) }}" method="post" class="card p-4 shadow-sm card-body-container">
                 <div class="m-1">
                     <label for="name" class="form-label">Wat is je naam?</label>
                     <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe"
@@ -56,13 +56,12 @@
             </form>
             <div class="mt-3 card p-4 shadow-sm card-body-container">
                 <p class="m-0 p-0">
-                    @guest
+                    @if (Auth::check() && !isStaff() || !Auth::check())
                         Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze 
-                        <a href="/opening-datetime">hier</a>
-                    @endguest
-                    @auth
-                        Let op de aangepaste opeingstijden. Bekijk deze <a href="/opening-datetime">hier</a>
-                    @endauth
+                        <a href="{{ route('opening-datetime.view') }}">hier</a>
+                    @else
+                        Let op de aangepaste opeingstijden. Bekijk deze <a href="{{ route('opening-datetime.view') }}">hier</a>
+                    @endif
                 </p>
             </div>
         </div>

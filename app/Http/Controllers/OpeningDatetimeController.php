@@ -25,16 +25,16 @@ class OpeningDatetimeController extends Controller
         $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
         $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
         if ($opening > $closing) {
-            return redirect('/opening-datetime')->withErrors('De opening is na de sluiting.');
+            return redirect()->route('opening-datetime.view')->withErrors('De opening is na de sluiting.');
         }
 
         if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect('/opening-datetime')->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+            return redirect()->route('opening-datetime.view')->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
         OpeningDatetime::create($request->only(['date', 'open', 'opening', 'closing']));
 
-        return redirect('/opening-datetime')->with('success', 'Toegevoegd.');
+        return redirect()->route('opening-datetime.view')->with('success', 'Toegevoegd.');
     }
 
     public function edit(Request $request, OpeningDatetime $openingDatetime)
@@ -50,24 +50,24 @@ class OpeningDatetimeController extends Controller
         ]);
 
         if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect("/opening-datetime/$openingDatetime->id/edit")->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+            return redirect()->route('opening-datetime.edit', ['openingDatetime' => $openingDatetime])->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
         $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
         $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
         if ($opening > $closing) {
-            return redirect("/opening-datetime/$openingDatetime->id/edit")->withErrors('De opening is na de sluiting');
+            return redirect()->route('opening-datetime.edit', ['openingDatetime' => $openingDatetime])->withErrors('De opening is na de sluiting');
         }
 
         $openingDatetime->update($request->only(['date', 'open', 'opening', 'closing']));
 
-        return redirect('/opening-datetime')->with('success', 'Aangepast.');
+        return redirect()->route('opening-datetime.view')->with('success', 'Aangepast.');
     }
 
     public function delete(OpeningDatetime $openingDatetime)
     {
         $openingDatetime->delete();
 
-        return redirect('/opening-datetime')->with('success', 'Verwijderd.');
+        return redirect()->route('opening-datetime.view')->with('success', 'Verwijderd.');
     }
 }

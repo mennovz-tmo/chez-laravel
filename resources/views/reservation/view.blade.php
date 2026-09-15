@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 mb-4 section-title">Zoek reservering</h1>
-            <form action="reservation" method="post" class="card p-4 shadow-sm card-body-container">
+            <form action="{{ route('reservation.view') }}" method="post" class="card p-4 shadow-sm card-body-container">
                 @csrf
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
@@ -33,14 +33,14 @@
                     <div class="@auth col-md-6 @endauth @guest col-md-12 @endguest">
                         <button type="submit" class="btn btn-primary w-100">Zoek</button>
                     </div>
-                    @auth
+                    @if (isStaff())
                         <div class="col-md-6 d-flex gap-2">
-                            <a href="/reservation?start={{ now()->format('Y-m-d') }}&end={{ now()->format('Y-m-d') }}"
+                            <a href="{{ route('reservation.view', ['start' => now()->format('Y-m-d'), 'end' => now()->format('Y-m-d')]) }}"
                                 class="btn btn-outline-dark w-50">Vandaag</a>
-                            <a href="/reservation?start={{ now()->addDay()->format('Y-m-d') }}&end={{ now()->addDay()->format('Y-m-d') }}"
+                            <a href="{{ route('reservation.view', ['start' => now()->addDay()->format('Y-m-d'), 'end' => now()->addDay()->format('Y-m-d')]) }}"
                                 class="btn btn-outline-dark w-50">Morgen</a>
                         </div>
-                    @endauth
+                    @endif
                 </div>
             </form>
 
@@ -72,23 +72,23 @@
                                         <p class="mb-1 text-subtitle">
                                             {{ $date }} vanaf {{ $arrival }} voor {{ $amount_of_people }} personen.
                                         </p>
-                                        @auth
+                                        @if (isStaff())
                                             <p class="mb-0 text-small-rust">Telefoon: {{ $phone_number }}</p>
-                                        @endauth
+                                        @endif
                                     </div>
                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                                        @auth
+                                        @if (isStaff())
                                             <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom" data-bs-toggle="modal"
                                                 data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => 'reservation/' . $id . '/delete', 'message' => 'Deze reservering wordt permanent verwijderd.'])
-                                            <a href="reservation/{{ $id }}/show" class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
-                                            <a href="reservation/{{ $id }}/edit" class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
+                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt permanent verwijderd.'])
+                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
+                                            <a href="{{ route('reservation.edit', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
                                         @else
                                             <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
                                                 data-bs-target="#confirmModal-res-{{ $id }}">Annuleer</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => 'reservation/' . $id . '/delete', 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
-                                            <a href="reservation/{{ $id }}/show" class="btn btn-outline-dark btn-sm">Bekijk</a>
-                                        @endauth
+                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
+                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm">Bekijk</a>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="mt-2 pt-2 border-top border-top-light">

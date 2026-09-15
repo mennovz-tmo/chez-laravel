@@ -1,0 +1,1 @@
+When editing a recipe the picture location is set to '/storage/'.

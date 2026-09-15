@@ -7,7 +7,7 @@
             <p class="lead mt-3 tagline-italic">
                 Burgers sinds 1974. simpel, eerlijk, met de hand gemaakt.
             </p>
-            <a href="/menu" class="btn btn-primary btn-lg mt-4 px-4 py-3">Bekijk alle menu items</a>
+            <a href="{{ route('menu') }}" class="btn btn-primary btn-lg mt-4 px-4 py-3">Bekijk alle menu items</a>
         </div>
         <div class="col-md-5 text-end d-none d-md-block">
             <div class="hero-banner">
@@ -40,16 +40,6 @@
                             <h3 class="card-title h4 card-title">{{ $name }}</h3>
                             <p class="card-text card-text-muted">{{ $description }}</p>
                             <p class="mb-2 text-small-rust">Allergenen: {{ $allergens }}</p>
-                            <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
-                                <span class="h4 mb-0 price-display">€{{ $price }}</span>
-                                @auth
-                                    <div class="d-flex gap-2">
-                                        <a href="/recipe/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
-                                        <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal" data-bs-target="#confirmModal-recipe-{{ $id }}">Verwijder</button>
-                                        @include('components.confirm-modal', ['uid' => 'recipe-'.$id, 'url' => '/recipe/'.$id.'/delete', 'message' => 'Dit recept wordt permanent verwijderd.'])
-                                    </div>
-                                @endauth
-                            </div>
                         </div>
                     </article>
                 </div>

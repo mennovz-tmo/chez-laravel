@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="display-5 mb-4 section-title">Bewerken</h1>
-    <form method="post" action="/opening-datetime/{{ $item->id }}/edit" class="card p-4 shadow-sm card-body-container">
+    <form method="post" action="{{ route('opening-datetime.edit', ['openingDatetime' => $item]) }}" class="card p-4 shadow-sm card-body-container">
         @csrf
         <div class="row g-3">
             <div class="col-md-4">

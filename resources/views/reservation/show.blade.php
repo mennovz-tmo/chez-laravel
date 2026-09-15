@@ -17,7 +17,7 @@
                 <p class="mb-1"><strong>Email:</strong> {{ $reservation->email }}</p>
                 <p class="mb-1"><strong>Telefoon:</strong> {{ $reservation->phone_number }}</p>
                 <p class="mb-1"><strong>Reserveringsnummer:</strong> {{ $reservation->number }}</p>
-                @if($reservation->comment)
+                @if ($reservation->comment)
                     <p class="mb-1"><strong>Opmerking:</strong> {{ $reservation->comment }}</p>
                 @endif
                 <p class="mb-0 text-muted text-small-muted">Gemaakt op {{ $reservation->created_at }}</p>

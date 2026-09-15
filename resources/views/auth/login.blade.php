@@ -5,7 +5,7 @@
         <div class="col-md-6 col-lg-5">
             <div class="card p-4 shadow-sm card-container">
                 <h2 class="mb-4 display-5 section-title">Inloggen</h2>
-                <form action="login" method="post">
+                <form action="{{ route('login.submit') }}" method="post">
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -25,7 +25,7 @@
                 </form>
                 @if (Config::get('auth.account_creation_enabled'))
                     <div class="mt-4 text-center">
-                        <p class="mb-0">Geen account? <a href="signup">Maak er een</a>.</p>
+                        <p class="mb-0">Geen account? <a href="{{ route('register') }}">Maak er een</a>.</p>
                     </div>
                 @endif
             </div>

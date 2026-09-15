@@ -40,7 +40,7 @@ class ReservationDeleteRequested extends Mailable
         return new Content(
             markdown: 'emails.reservations.delete',
             with: [
-                'deleteUrl' => url("/reservation/{$this->reservation->id}/delete/{$this->deleteToken}"),
+                'deleteUrl' => route('reservation.delete.confirm', ['reservation' => $this->reservation, 'delete_token' => $this->deleteToken]),
             ],
         );
     }

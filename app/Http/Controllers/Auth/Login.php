@@ -21,7 +21,11 @@ class Login extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/')->with('success', 'Welcome back!');
+            if (! $request->user()->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            return redirect()->intended(route('welcome'))->with('success', 'Welcome back!');
         }
 
         return back()

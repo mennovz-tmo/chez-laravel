@@ -80,10 +80,10 @@ test('expired token does not delete and is cleared', function () {
     expect($reservation->fresh()->delete_token)->toBeNull();
 });
 
-test('authenticated user deletes immediately without email', function () {
+test('staff user deletes immediately without email', function () {
     Mail::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role' => 'staff']);
     $reservation = deletableReservation();
 
     $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
@@ -91,4 +91,59 @@ test('authenticated user deletes immediately without email', function () {
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->toBeNull();
     Mail::assertNotSent(ReservationDeleteRequested::class);
+});
+
+test('verified user with matching email deletes immediately without email', function () {
+    Mail::fake();
+
+    $user = User::factory()->create(['email' => 'test@example.com']);
+    $reservation = deletableReservation(['email' => 'test@example.com']);
+
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+
+    $response->assertRedirect('/reservation');
+    expect(Reservation::find($reservation->id))->toBeNull();
+    Mail::assertNotSent(ReservationDeleteRequested::class);
+});
+
+test('unverified user with matching email does not delete directly', function () {
+    Mail::fake();
+
+    $user = User::factory()->unverified()->create(['email' => 'test@example.com']);
+    $reservation = deletableReservation(['email' => 'test@example.com']);
+
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+
+    $response->assertOk();
+    $response->assertViewIs('reservation.delete');
+    expect(Reservation::find($reservation->id))->not->toBeNull();
+    Mail::assertSent(ReservationDeleteRequested::class, fn ($mail) => $mail->hasTo('test@example.com'));
+});
+
+test('verified user with non-matching email does not delete directly', function () {
+    Mail::fake();
+
+    $user = User::factory()->create(['email' => 'other@example.com']);
+    $reservation = deletableReservation(['email' => 'test@example.com']);
+
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+
+    $response->assertOk();
+    $response->assertViewIs('reservation.delete');
+    expect(Reservation::find($reservation->id))->not->toBeNull();
+    Mail::assertSent(ReservationDeleteRequested::class, fn ($mail) => $mail->hasTo('test@example.com'));
+});
+
+test('verified user with matching email cannot delete within 12 hours of reservation', function () {
+    $user = User::factory()->create(['email' => 'test@example.com']);
+    $reservation = deletableReservation([
+        'email' => 'test@example.com',
+        'date' => now()->format('Y-m-d'),
+        'arrival' => now()->addHours(2)->format('H:i'),
+    ]);
+
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+
+    $response->assertRedirect('/reservation');
+    expect(Reservation::find($reservation->id))->not->toBeNull();
 });

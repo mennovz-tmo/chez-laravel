@@ -32,14 +32,14 @@
                             <p class="mb-2 text-small-rust">Allergenen: {{ $allergens }}</p>
                             <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
                                 <span class="h4 mb-0 price-display">€{{ $price }}</span>
-                                @auth
+                                @if (isStaff())
                                     <div class="d-flex gap-2">
-                                        <a href="/recipe/{{ $id }}/edit" class="btn btn-outline-dark btn-sm">Bewerk</a>
+                                        <a href="{{ route('recipe.edit', ['recipe' => $id]) }}" class="btn btn-outline-dark btn-sm">Bewerk</a>
                                         <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
                                             data-bs-target="#confirmModal-recipe-{{ $id }}">Verwijder</button>
-                                        @include('components.confirm-modal', ['uid' => 'recipe-' . $id, 'url' => '/recipe/' . $id . '/delete', 'message' => 'Dit recept wordt permanent verwijderd.'])
+                                        @include('components.confirm-modal', ['uid' => 'recipe-' . $id, 'url' => route('recipe.delete', ['recipe' => $id]), 'message' => 'Dit recept wordt permanent verwijderd.'])
                                     </div>
-                                @endauth
+                                @endif
                             </div>
                         </div>
                     </article>
