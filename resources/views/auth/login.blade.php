@@ -23,9 +23,11 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
-                <div class="mt-4 text-center">
-                    <p class="mb-0">Geen account? <a href="signup">Maak er een</a>.</p>
-                </div>
+                @if (Config::get('auth.account_creation_enabled'))
+                    <div class="mt-4 text-center">
+                        <p class="mb-0">Geen account? <a href="signup">Maak er een</a>.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
