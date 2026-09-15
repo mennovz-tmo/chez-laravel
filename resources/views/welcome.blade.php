@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row align-items-center min-vh-75">
-        <div class="col-md-7">
+        <div class="col-md-8">
             <h1 class="display-3 heading-display">Chez Laravel</h1>
             <p class="lead mt-3 tagline-italic">
                 Burgers sinds 1974. simpel, eerlijk, met de hand gemaakt.

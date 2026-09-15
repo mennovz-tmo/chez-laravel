@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-lg-7 card p-4 shadow-sm card-body-container">
+        <div class="col-lg-8 card p-4 shadow-sm card-body-container">
             <h1>Controleer je e-mail</h1>
             <p>
                 We hebben een e-mail gestuurd naar <strong>{{ $reservation->email }}</strong> met een link om de reservering
