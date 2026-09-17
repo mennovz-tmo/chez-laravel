@@ -8,9 +8,11 @@ use App\Http\Controllers\ErrorController;
 use App\Http\Controllers\OpeningDatetimeController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AccountRegistrationState;
 use App\Http\Middleware\OwnerMiddleware;
+use App\Http\Middleware\StaffMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -56,6 +58,12 @@ Route::controller(RecipeController::class)
     ->group(function () {
         Route::get('/menu', 'menu')->name('menu');
         Route::get('/', 'welcome')->name('welcome');
+    });
+
+Route::controller(StatisticsController::class)
+    ->middleware(StaffMiddleware::class)
+    ->group(function () {
+        Route::get('/statistics', 'index')->name('statistics');
     });
 
 Route::controller(ReservationController::class)
