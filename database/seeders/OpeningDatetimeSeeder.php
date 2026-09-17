@@ -12,11 +12,17 @@ class OpeningDatetimeSeeder extends Seeder
      */
     public function run(): void
     {
+        $hour = mt_rand(8, 15);
+        $minute = mt_rand(0, 59);
+        $open = "$hour:$minute";
+        $hour += mt_rand(2, 8);
+        $close = "$hour:$minute";
+
         OpeningDatetime::factory()->create([
-            'date' => fake()->date('Y-m-d'),
-            'open' => fake()->boolean(80),
-            'opening' => fake()->time('H:i'),
-            'closing' => fake()->time('H:i'),
+            'date' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
+            'open' => fake()->boolean(65),
+            'opening' => $open,
+            'closing' => $close,
         ]);
     }
 }
