@@ -90,7 +90,7 @@ class RecipeController extends Controller
 
     public function menu()
     {
-        $recipes = Recipe::get();
+        $recipes = Recipe::get()->toArray();
 
         return view('menu.index', ['recipes' => $recipes]);
     }

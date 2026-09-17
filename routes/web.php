@@ -10,6 +10,7 @@ use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AccountRegistrationState;
+use App\Http\Middleware\OwnerMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -89,4 +90,22 @@ Route::controller(OpeningDatetimeController::class)
                 Route::get('/delete', 'delete')->name('opening-datetime.delete');
                 Route::match(['get', 'post'], '/edit', 'edit')->name('opening-datetime.edit');
             });
+    });
+
+Route::controller(UserController::class)
+    ->prefix('manage')
+    ->middleware(OwnerMiddleware::class)
+    ->group(function () {
+        Route::prefix('/users')->group(function () {
+            Route::get('/', 'index')->name('manage.users.view');
+
+            Route::prefix('{user}')->group(function () {
+                // Route::get('/create', 'create')->name('manage.users.create');
+                // Route::post('/create', 'create_store')->name('manage.users.create.store');
+                Route::get('/edit', 'edit')->name('manage.users.edit');
+                Route::post('/edit', 'edit_store')->name('manage.users.edit.store');
+                Route::get('/delete', 'delete')->name('manage.users.delete');
+                Route::post('/delete', 'delete_store')->name('manage.users.delete.confirm');
+            });
+        });
     });

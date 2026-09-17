@@ -13,31 +13,62 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">reserveren</a>
                     <ul class="dropdown-menu border-0 shadow-sm dropdown-menu-custom">
-                        <li><a class="dropdown-item" href="{{ route('reservation.create') }}" class="dropdown-link">reservering
-                                maken</a></li>
-                        <li><a class="dropdown-item" href="{{ route('reservation.view') }}" class="dropdown-link">reservering bekijken</a>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reservation.create') }}" class="dropdown-link">
+                                reservering maken
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reservation.view') }}" class="dropdown-link">
+                                reservering bekijken
+                            </a>
                         </li>
                     </ul>
                 </li>
                 @if (isStaff())
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">beheer</a>
                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm dropdown-menu-custom">
-                        <li><a class="dropdown-item" href="{{ route('recipe.create') }}" class="dropdown-link">recept toevoegen</a></li>
-                        <li><a class="dropdown-item" href="{{ route('menu') }}" class="dropdown-link">recepten beheren</a>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('recipe.create') }}" class="dropdown-link">
+                                recept toevoegen
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('menu') }}" class="dropdown-link">
+                                recepten beheren
+                            </a>
                         </li>
                         <li>
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
-                        <li><a class="dropdown-item" href="{{ route('reservation.view') }}" class="dropdown-link">reserveringen</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reservation.view') }}" class="dropdown-link">
+                                reserveringen
+                            </a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
-                        <li><a class="dropdown-item" href="{{ route('opening-datetime.view') }}" class="dropdown-link">openingstijden</a>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('opening-datetime.view') }}" class="dropdown-link">
+                                openingstijden
+                            </a>
                         </li>
                         <li>
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
-                        <li><a class="dropdown-item" href="{{ route('logout') }}" class="dropdown-link">uitloggen</a>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('manage.users.view') }}" class="dropdown-link">
+                                gebruikers beheren
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider dropdown-divider-custom">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('logout') }}" class="dropdown-link">
+                                uitloggen
+                            </a>
                         </li>
                     </ul>
                 @elseif (Auth::check() && !isStaff())
