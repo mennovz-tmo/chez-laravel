@@ -29,7 +29,7 @@ class RecipeController extends Controller
 
         $picture_loc = false;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
-            $picture_loc = '/storage/' . $request
+            $picture_loc = '/storage/'.$request
                 ->image('picture')
                 ->toAvif()
                 ->store('images', 'public');
@@ -93,6 +93,7 @@ class RecipeController extends Controller
                 ->route('menu')
                 ->with('success', 'Het menu items is verwijderd.');
         }
+
         return redirect()
             ->route('menu')
             ->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');

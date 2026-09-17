@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 uses(RefreshDatabase::class);
 
@@ -39,4 +40,16 @@ test('authenticated user sees all reservations', function () {
     $user = User::factory()->create();
     Reservation::factory()->count(3)->create();
     $this->actingAs($user)->get('/reservation')->assertOk();
+});
+
+test('reservation pdf is downloaded', function () {
+    Pdf::fake();
+
+    $reservation = Reservation::factory()->create();
+
+    $this->get("/reservation/{$reservation->id}/pdf")->assertOk();
+
+    Pdf::assertRespondedWithPdf(fn ($pdf) => $pdf->isDownload()
+        && $pdf->viewName === 'pdf.reservation'
+        && $pdf->downloadName === "reservation_{$reservation->number}.pdf");
 });

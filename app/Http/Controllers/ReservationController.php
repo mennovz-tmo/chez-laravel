@@ -7,11 +7,12 @@ use App\Mail\ReservationDeleteRequested;
 use App\Models\OpeningDatetime;
 use App\Models\Reservation;
 use App\Models\WeeklySchedule;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
-use DateTime;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 use function in_array;
 
@@ -34,7 +35,7 @@ class ReservationController extends Controller
                 ->with('success', 'De reservering is verwijderd');
         }
 
-        if (!$this->isDeletionAllowed($reservation)) {
+        if (! $this->isDeletionAllowed($reservation)) {
             return redirect()
                 ->route('reservation.view')
                 ->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen')
@@ -68,7 +69,7 @@ class ReservationController extends Controller
                 ->withInput();
         }
 
-        if (!$reservation->hasValidDeleteToken($delete_token)) {
+        if (! $reservation->hasValidDeleteToken($delete_token)) {
             return redirect()
                 ->route('reservation.view')
                 ->withErrors('Deze link om een reservering te verwijderen is niet geldig!')
@@ -131,7 +132,7 @@ class ReservationController extends Controller
                 'end.after_or_equal' => 'De einddatum moet gelijk zijn aan of na de startdatum.',
             ]);
 
-            if (!Auth::check() && !$request->filled('name') && !$request->filled('email')) {
+            if (! Auth::check() && ! $request->filled('name') && ! $request->filled('email')) {
                 return redirect()
                     ->route('reservation.view')
                     ->withErrors('Je moet zoeken met email of exacte naam als gast!')
@@ -146,7 +147,7 @@ class ReservationController extends Controller
 
             if ($request->filled('name')) {
                 if (Auth::check()) {
-                    $query->where('name', 'like', '%' . $validated['name'] . '%');
+                    $query->where('name', 'like', '%'.$validated['name'].'%');
                 } else {
                     $query->where('name', '=', $validated['name']);
                 }
@@ -193,7 +194,7 @@ class ReservationController extends Controller
             ->get();
         if ($opening_datetime->count() > 0) {
             $opening_datetime = $opening_datetime[0];
-            if (!$opening_datetime['open']) {
+            if (! $opening_datetime['open']) {
                 return redirect()
                     ->route('reservation.create')
                     ->withErrors('De ingevoerde datum zijn wij helaas gesloten.')
@@ -216,7 +217,7 @@ class ReservationController extends Controller
             ->get();
         if ($default_schedule->count() > 0) {
             $default_schedule = $default_schedule[0];
-            if (!$default_schedule['is_open']) {
+            if (! $default_schedule['is_open']) {
                 return redirect()
                     ->route('reservation.create')
                     ->withErrors('De ingevoerde datum zijn wij helaas gesloten.')
@@ -302,7 +303,7 @@ class ReservationController extends Controller
             ->get();
         if ($opening_datetime->count() > 0) {
             $opening_datetime = $opening_datetime[0];
-            if (!$opening_datetime['open']) {
+            if (! $opening_datetime['open']) {
                 return redirect()
                     ->route('reservation.edit', compact('reservation'))
                     ->withErrors('De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.')
@@ -325,7 +326,7 @@ class ReservationController extends Controller
             ->get();
         if ($default_schedule->count() > 0) {
             $default_schedule = $default_schedule[0];
-            if (!$default_schedule['is_open']) {
+            if (! $default_schedule['is_open']) {
                 return redirect()
                     ->route('reservation.edit', compact('reservation'))
                     ->withErrors('De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.')
@@ -382,5 +383,14 @@ class ReservationController extends Controller
         return redirect()
             ->route('reservation.show', compact('reservation'))
             ->with('success', 'De reservering is aangepast! U krijgt een email met de nieuwe details.');
+    }
+
+    public function pdf(Reservation $reservation)
+    {
+        return Pdf::view('pdf.reservation', compact('reservation'))
+            ->format('a4')
+            ->margins(20, 15, 20, 15)
+            ->name("reservation_$reservation->number.pdf")
+            ->download();
     }
 }

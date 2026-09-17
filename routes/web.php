@@ -73,6 +73,7 @@ Route::controller(ReservationController::class)
                 Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
                 Route::match(['get', 'post'], '/edit', 'edit')->name('reservation.edit');
                 Route::get('/show', 'show')->name('reservation.show');
+                Route::get('/pdf', 'pdf')->name('reservation.pdf');
             });
     });
 

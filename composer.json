@@ -13,6 +13,7 @@
         "laravel/framework": "^13.32",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
+        "spatie/browsershot": "^5.4",
         "spatie/laravel-pdf": "^2.13"
     },
     "require-dev": {

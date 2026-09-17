@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\OpeningDatetime;
-use Illuminate\Http\Request;
 use DateTime;
+use Illuminate\Http\Request;
 
 class OpeningDatetimeController extends Controller
 {
@@ -30,7 +30,7 @@ class OpeningDatetimeController extends Controller
                 ->withErrors('De opening is na de sluiting.');
         }
 
-        if ($request->input('open') && (!$request->filled('opening') || !$request->filled('closing'))) {
+        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
             return redirect()
                 ->route('opening-datetime.view')
                 ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
@@ -55,7 +55,7 @@ class OpeningDatetimeController extends Controller
             'closing' => 'nullable|date_format:H:i',
         ]);
 
-        if ($request->input('open') && (!$request->filled('opening') || !$request->filled('closing'))) {
+        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
             return redirect()
                 ->route('opening-datetime.edit', compact('openingDatetime'))
                 ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
