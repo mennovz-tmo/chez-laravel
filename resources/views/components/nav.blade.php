@@ -29,12 +29,12 @@
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">beheer</a>
                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm dropdown-menu-custom">
                         <li>
-                            <a class="dropdown-item" href="{{ route('recipe.create') }}" class="dropdown-link">
+                            <a class="dropdown-item" href="{{ route('recipe.create') }}">
                                 recept toevoegen
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('menu') }}" class="dropdown-link">
+                            <a class="dropdown-item" href="{{ route('menu') }}">
                                 recepten beheren
                             </a>
                         </li>
@@ -42,7 +42,7 @@
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('reservation.view') }}" class="dropdown-link">
+                            <a class="dropdown-item" href="{{ route('reservation.view') }}">
                                 reserveringen
                             </a>
                         </li>
@@ -50,7 +50,7 @@
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('opening-datetime.view') }}" class="dropdown-link">
+                            <a class="dropdown-item" href="{{ route('opening-datetime.view') }}">
                                 openingstijden
                             </a>
                         </li>
@@ -59,7 +59,7 @@
                         </li>
                         @if (isOwner())
                             <li>
-                                <a class="dropdown-item" href="{{ route('manage.users.view') }}" class="dropdown-link">
+                                <a class="dropdown-item" href="{{ route('manage.users.view') }}">
                                     gebruikers beheren
                                 </a>
                             </li>
@@ -67,8 +67,14 @@
                                 <hr class="dropdown-divider dropdown-divider-custom">
                             </li>
                         @endif
+                            <li>
+                                <a class="dropdown-item" href="{{ route('statistics') }}">statistieken</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider dropdown-divider-custom">
+                            </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}" class="dropdown-link">
+                            <a class="dropdown-item" href="{{ route('logout') }}">
                                 uitloggen
                             </a>
                         </li>
