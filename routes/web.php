@@ -80,6 +80,7 @@ Route::controller(OpeningDatetimeController::class)
     ->group(function () {
         Route::get('/', 'index')->name('opening-datetime.view');
         Route::post('/create', 'create')->name('opening-datetime.create')->middleware(['auth', 'verified']);
+
         Route::controller(OpeningDatetimeController::class)
             ->middleware(['auth', 'verified'])
             ->prefix('{openingDatetime}')

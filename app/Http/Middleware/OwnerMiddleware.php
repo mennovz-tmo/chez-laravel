@@ -11,7 +11,7 @@ class OwnerMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! isOwner()) {
-            abort(403, 'Owner access required.');
+            return redirect()->route('welcome')->withErrors('U heeft geen toegang om die pagina te bekijken.');
         }
 
         return $next($request);

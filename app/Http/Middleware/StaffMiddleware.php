@@ -11,7 +11,7 @@ class StaffMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! isStaff()) {
-            abort(403, 'Staff or owner access required.');
+            return redirect()->route('welcome')->withErrors('U heeft geen toegang om die pagina te bekijken.');
         }
 
         return $next($request);
