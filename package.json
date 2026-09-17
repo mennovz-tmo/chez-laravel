@@ -17,6 +17,7 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
-        "fontaine": "^0.8.1"
+        "fontaine": "^0.8.1",
+        "puppeteer": "^25.11.0"
     }
 }
