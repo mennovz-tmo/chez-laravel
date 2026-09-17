@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::get()->sortDesc()->toArray();
+        $users = User::where('role', '!=', 'owner')->get()->sortDesc()->toArray();
 
         return view('manage.users.view')->with('users', $users);
     }
