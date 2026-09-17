@@ -121,6 +121,15 @@ class ReservationController extends Controller
                     ->get());
         }
 
+        if (Auth::check() && $request->input('email') == null && ! isStaff() && $request->input('start') == null && $request->input('end') == null && $request->input('name') == null) {
+            return view('reservation.view')
+                ->with('reservations', $query
+                    ->where('email', '=', Auth::user()->email)
+                    ->orderByDesc('date')
+                    ->orderByDesc('arrival')
+                    ->get());
+        }
+
         $method = $request->getMethod();
         if (in_array($method, ['POST', 'GET']) && ($request->filled('start') || $request->filled('end') || $request->filled('name') || $request->filled('email'))) {
             $validated = $request->validate([
