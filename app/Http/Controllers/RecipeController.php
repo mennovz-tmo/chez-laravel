@@ -26,18 +26,27 @@ class RecipeController extends Controller
             'picture' => ['nullable', 'image'],
         ]);
 
-        $picture_loc = '/storage/';
+        $picture_loc = false;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
-            $picture_loc .= $request->image('picture')->toAvif()->store('images', 'public');
+            $picture_loc = '/storage/'.$request->image('picture')->toAvif()->store('images', 'public');
         }
 
-        $recipe->update([
-            'name' => $request->input('name'),
-            'description_short' => $request->input('description_short'),
-            'allergens' => $request->input('allergens'),
-            'price' => $request->input('price'),
-            'picture' => $picture_loc,
-        ]);
+        if (empty($picture_loc)) {
+            $recipe->update([
+                'name' => $request->input('name'),
+                'description_short' => $request->input('description_short'),
+                'allergens' => $request->input('allergens'),
+                'price' => $request->input('price'),
+            ]);
+        } else {
+            $recipe->update([
+                'name' => $request->input('name'),
+                'description_short' => $request->input('description_short'),
+                'allergens' => $request->input('allergens'),
+                'price' => $request->input('price'),
+                'picture' => $picture_loc,
+            ]);
+        }
 
         return redirect()->route('menu')->with('success', 'Het menu item is aangepast.');
     }
