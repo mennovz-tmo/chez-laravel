@@ -51,51 +51,46 @@
                 </h2>
                 <div class="row g-3">
                     @forelse ($reservations as $reservation)
-                        @php
-                            $id = $reservation['id'];
-                            $number = $reservation['number'];
-                            $name = $reservation['name'];
-                            $amount_of_people = $reservation['amount_of_people'];
-                            $reservation_email = $reservation['email'];
-                            $phone_number = $reservation['phone_number'];
-                            $comment = $reservation['comment'];
-                            $date = $reservation['date']->format('d-m-Y');
-                            $arrival = explode(':', $reservation['arrival']);
-                            $arrival = $arrival[0] . ':' . $arrival[1];
-                            $created_at = $reservation['created_at'];
-                        @endphp
                         <div class="col-12">
                             <div class="card shadow-sm p-3 card-body-container">
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <h3 class="h5 mb-2 card-title">{{ $name }}</h3>
+                                        <h3 class="h5 mb-2 card-title">{{ $reservation->name }}</h3>
+                                        @php
+//                                            dd($reservation->date);
+                                            $date = $reservation['date']->format('d-m-Y');
+                                            $arrival = explode(':', $reservation['arrival']);
+                                            $arrival = "$arrival[0]:$arrival[1]";
+                                        @endphp
                                         <p class="mb-1 text-subtitle">
-                                            {{ $date }} vanaf {{ $arrival }} voor {{ $amount_of_people }} personen.
+                                            {{ $reservation->date->format('d-m-Y') }} vanaf {{ $arrival }} voor {{ $reservation->amount_of_people }} personen.
                                         </p>
                                         @if (isStaff())
-                                            <p class="mb-0 text-small-rust">Telefoon: {{ $phone_number }}</p>
+                                            <p class="mb-0 text-small-rust">Telefoon: {{ $reservation->phone_number }}</p>
                                         @endif
                                     </div>
                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                         @if (isStaff())
                                             <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom"
-                                                data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt permanent verwijderd.'])
-                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $reservation->id }}">Verwijder</button>
+                                            @include('components.confirm-modal', ['uid' => 'res-' . $reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt permanent verwijderd.'])
+                                            <a href="{{ route('reservation.show', $reservation->id) }}"
                                                 class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
-                                            <a href="{{ route('reservation.edit', ['reservation' => $id]) }}"
+                                            <a href="{{ route('reservation.edit', $reservation->id) }}"
                                                 class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
                                         @else
                                             <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
-                                                data-bs-target="#confirmModal-res-{{ $id }}">Annuleer</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
-                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}"
+                                                data-bs-target="#confirmModal-res-{{ $reservation->id }}">Annuleer</button>
+                                            @include('components.confirm-modal', ['uid' => 'res-' . $reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
+                                            <a href="{{ route('reservation.show', $reservation->id) }}"
                                                 class="btn btn-outline-dark btn-sm">Bekijk</a>
+                                            <a href="{{ route('reservation.pdf', $reservation->id) }}" target="_blank"
+                                                class="btn btn-outline-dark btn-sm mt-2">Download pdf</a>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="mt-2 pt-2 border-top border-top-light">
-                                    Reserveringsnummer: {{ $number }} · Gemaakt op {{ $created_at }}
+                                    Reserveringsnummer: {{ $reservation->number }} · Gemaakt op {{ $reservation->created_at }}
                                 </div>
                             </div>
                         </div>
