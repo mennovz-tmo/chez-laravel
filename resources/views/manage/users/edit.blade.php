@@ -9,16 +9,16 @@
                 <div class="mb-3">
                     <label for="name" class="form-label">Naam</label>
                     <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe"
-                        value="{{ old('name', $user->name) }}" class="form-input">
+                        value="{{ old('name', $user->name) }}">
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Emailadres</label>
                     <input required type="email" class="form-control" id="email" name="email" placeholder="mail@example.com"
-                        value="{{ old('email', $user->email) }}" class="form-input">
+                        value="{{ old('email', $user->email) }}">
                 </div>
                 <div class="mb-3">
                     <label for="role" class="form-label">Account rol</label>
-                    <select name="role" id="role" class="form-input">
+                    <select name="role" id="role">
                         <option value="staff" @if($user->role == 'staff')selected @endif>Staff</option>
                         <option value="consumer" @if($user->role == 'consumer')selected @endif>Gebruiker</option>
                     </select>

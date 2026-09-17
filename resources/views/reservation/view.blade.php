@@ -11,22 +11,22 @@
                         <label for="start" class="form-label">Van</label>
                         <input type="date" class="form-control" id="start" name="start"
                             value="{{ old('start', $start ?? '') }}" min="{{ now()->format('Y-m-d') }}"
-                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}" class="form-input">
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}">
                     </div>
                     <div class="col-md-3">
                         <label for="end" class="form-label">Tot</label>
                         <input type="date" class="form-control" id="end" name="end" value="{{ old('end', $end ?? '') }}"
-                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}" class="form-input">
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}">
                     </div>
                     <div class="col-md-3">
                         <label for="name" class="form-label">Naam</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Naam"
-                            value="{{ old('name', $name ?? '') }}" class="form-input">
+                            value="{{ old('name', $name ?? '') }}">
                     </div>
                     <div class="col-md-3">
                         <label for="email" class="form-label">Emailadres</label>
                         <input type="text" class="form-control" id="email" name="email" placeholder="john@example.com"
-                            value="{{ old('email', $email ?? '') }}" class="form-input">
+                            value="{{ old('email', $email ?? '') }}">
                     </div>
                 </div>
                 <div class="row g-2 mt-2">
@@ -78,16 +78,19 @@
                                     </div>
                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                         @if (isStaff())
-                                            <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom" data-bs-toggle="modal"
-                                                data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
+                                            <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom"
+                                                data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $id }}">Verwijder</button>
                                             @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt permanent verwijderd.'])
-                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
-                                            <a href="{{ route('reservation.edit', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
+                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}"
+                                                class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
+                                            <a href="{{ route('reservation.edit', ['reservation' => $id]) }}"
+                                                class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
                                         @else
                                             <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
                                                 data-bs-target="#confirmModal-res-{{ $id }}">Annuleer</button>
                                             @include('components.confirm-modal', ['uid' => 'res-' . $id, 'url' => route('reservation.delete.request', ['reservation' => $id]), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
-                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}" class="btn btn-outline-dark btn-sm">Bekijk</a>
+                                            <a href="{{ route('reservation.show', ['reservation' => $id]) }}"
+                                                class="btn btn-outline-dark btn-sm">Bekijk</a>
                                         @endif
                                     </div>
                                 </div>

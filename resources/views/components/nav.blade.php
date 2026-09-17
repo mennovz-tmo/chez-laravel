@@ -76,8 +76,8 @@
                 @elseif (Auth::check() && !isStaff())
                     <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">uitloggen</a></li>
                 @else
-                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>
-                @endauth
+                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>
+                @endif
             </ul>
         </div>
     </div>

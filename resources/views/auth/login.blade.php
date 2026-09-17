@@ -10,12 +10,12 @@
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input required type="email" class="form-control" name="email" id="email"
-                            placeholder="mail@example.com" value="{{ old('email') }}" class="form-input">
+                            placeholder="mail@example.com" value="{{ old('email') }}">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Wachtwoord</label>
                         <input required type="password" class="form-control" id="password" name="password" min="12"
-                            max="128" placeholder="..........." class="form-input">
+                            max="128" placeholder="...........">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="remember" id="remember" class="form-check-input form-check">
