@@ -9,35 +9,27 @@
             </div>
         @else
             @foreach ($recipes as $recipe)
-                @php
-                    $id = $recipe['id'];
-                    $name = $recipe['name'];
-                    $description = $recipe['description_short'];
-                    $allergens = $recipe['allergens'];
-                    $price = $recipe['price'];
-                    $picture = $recipe['picture'];
-                @endphp
                 <div class="col-md-6 col-lg-4">
                     <article class="card h-100 shadow-sm card-custom">
-                        @if($picture)
-                            <img src="{{ $picture }}" class="card-img-top" alt="{{ $name }}" class="card-image">
+                        @if($recipe->picture)
+                            <img src="{{ $recipe->picture }}" class="card-img-top" alt="{{ $recipe->name }}" class="card-image">
                         @else
                             <div class="card-img-top d-flex align-items-center justify-content-center card-placeholder">
-                                {{ substr($name, 0, 1) }}
+                                {{ $recipe->name }}
                             </div>
                         @endif
                         <div class="card-body d-flex flex-column">
-                            <h3 class="card-title h4 card-title">{{ $name }}</h3>
-                            <p class="card-text card-text-muted">{{ $description }}</p>
-                            <p class="mb-2 text-small-rust">Allergenen: {{ $allergens }}</p>
+                            <h3 class="card-title h4 card-title">{!! $recipe->name !!}</h3>
+                            <p class="card-text card-text-muted">{{ $recipe->description_short }}</p>
+                            <p class="mb-2 text-small-rust">Allergenen: {{ $recipe->allergens }}</p>
                             <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
-                                <span class="h4 mb-0 price-display">€{{ $price }}</span>
+                                <span class="h4 mb-0 price-display">€{{ $recipe->price }}</span>
                                 @if (isStaff())
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('recipe.edit', ['recipe' => $id]) }}" class="btn btn-outline-dark btn-sm">Bewerk</a>
+                                        <a href="{{ route('recipe.edit', $recipe) }}" class="btn btn-outline-dark btn-sm">Bewerk</a>
                                         <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
-                                            data-bs-target="#confirmModal-recipe-{{ $id }}">Verwijder</button>
-                                        @include('components.confirm-modal', ['uid' => 'recipe-' . $id, 'url' => route('recipe.delete', ['recipe' => $id]), 'message' => 'Dit recept wordt permanent verwijderd.'])
+                                            data-bs-target="#confirmModal-recipe-{{ $recipe->id }}">Verwijder</button>
+                                        @include('components.confirm-modal', ['uid' => 'recipe-' . $recipe->id, 'url' => route('recipe.delete', $recipe), 'message' => 'Dit recept wordt permanent verwijderd.'])
                                     </div>
                                 @endif
                             </div>
