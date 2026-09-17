@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+
 use function in_array;
 
 class UserController extends Controller
@@ -25,11 +26,13 @@ class UserController extends Controller
         return view('manage.users.view')->with('users', $users);
     }
 
-    public function edit(User $user) {
+    public function edit(User $user)
+    {
         return view('manage.users.edit', ['user' => $user->id])->with('user', $user);
     }
 
-    public function edit_store(Request $request, User $user) {
+    public function edit_store(Request $request, User $user)
+    {
         $validator = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
@@ -50,7 +53,7 @@ class UserController extends Controller
         $user->update([
             'name' => $validator['name'],
             'email' => $validator['email'],
-            'role' => $validator['role']
+            'role' => $validator['role'],
         ]);
 
         return redirect()->route('manage.users.view')->with('success', 'Het account is aangepast.');

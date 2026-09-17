@@ -57,14 +57,16 @@
                         <li>
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('manage.users.view') }}" class="dropdown-link">
-                                gebruikers beheren
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider dropdown-divider-custom">
-                        </li>
+                        @if (isOwner())
+                            <li>
+                                <a class="dropdown-item" href="{{ route('manage.users.view') }}" class="dropdown-link">
+                                    gebruikers beheren
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider dropdown-divider-custom">
+                            </li>
+                        @endif
                         <li>
                             <a class="dropdown-item" href="{{ route('logout') }}" class="dropdown-link">
                                 uitloggen
@@ -74,7 +76,7 @@
                 @elseif (Auth::check() && !isStaff())
                     <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">uitloggen</a></li>
                 @else
-                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>
                 @endauth
             </ul>
         </div>
