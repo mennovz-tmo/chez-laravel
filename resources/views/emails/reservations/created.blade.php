@@ -20,6 +20,9 @@ Of mailen naar contact@chezlaravel.com
 <x-mail::button :url="route('reservation.show', $reservation)">
 Bekijk reservering
 </x-mail::button>
+<x-mail::button :url="route('reservation.pdf', $reservation)">
+Download reservering pdf
+</x-mail::button>
 
 Met vriendelijke groet, <br>
 {{ config('app.name') }}
