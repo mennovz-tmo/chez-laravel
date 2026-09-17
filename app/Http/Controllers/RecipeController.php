@@ -15,7 +15,8 @@ class RecipeController extends Controller
     public function edit(Request $request, Recipe $recipe)
     {
         if ($request->isMethod('GET')) {
-            return view('recipe.edit', ['recipe' => $recipe->id])->with('current_data', $recipe->toArray());
+            return view('recipe.edit', compact('recipe'))
+                ->with('current_data', $recipe);
         }
 
         $request->validate([
@@ -28,27 +29,28 @@ class RecipeController extends Controller
 
         $picture_loc = false;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
-            $picture_loc = '/storage/'.$request->image('picture')->toAvif()->store('images', 'public');
+            $picture_loc = '/storage/' . $request
+                ->image('picture')
+                ->toAvif()
+                ->store('images', 'public');
         }
 
-        if (empty($picture_loc)) {
-            $recipe->update([
-                'name' => $request->input('name'),
-                'description_short' => $request->input('description_short'),
-                'allergens' => $request->input('allergens'),
-                'price' => $request->input('price'),
-            ]);
-        } else {
-            $recipe->update([
-                'name' => $request->input('name'),
-                'description_short' => $request->input('description_short'),
-                'allergens' => $request->input('allergens'),
-                'price' => $request->input('price'),
-                'picture' => $picture_loc,
-            ]);
+        $data = [
+            'name' => $request->input('name'),
+            'description_short' => $request->input('description_short'),
+            'allergens' => $request->input('allergens'),
+            'price' => $request->input('price'),
+        ];
+
+        if ($picture_loc) {
+            $data['picture'] = $picture_loc;
         }
 
-        return redirect()->route('menu')->with('success', 'Het menu item is aangepast.');
+        $recipe->update($data);
+
+        return redirect()
+            ->route('menu')
+            ->with('success', 'Het menu item is aangepast.');
     }
 
     public function create(Request $request)
@@ -63,7 +65,10 @@ class RecipeController extends Controller
 
         $picture_loc = '/storage/';
         if ($request->file('picture')->isValid()) {
-            $picture_loc .= $request->image('picture')->toAvif()->store('images', 'public');
+            $picture_loc .= $request
+                ->image('picture')
+                ->toAvif()
+                ->store('images', 'public');
         }
 
         Recipe::fillAndInsert([
@@ -74,7 +79,9 @@ class RecipeController extends Controller
             'picture' => $picture_loc,
         ]);
 
-        return redirect()->route('menu')->with('success', 'Het menu item is toegevoegd.');
+        return redirect()
+            ->route('menu')
+            ->with('success', 'Het menu item is toegevoegd.');
     }
 
     public function delete(Request $request, Recipe $recipe)
@@ -82,10 +89,13 @@ class RecipeController extends Controller
         if ($recipe != null) {
             $recipe->delete();
 
-            return redirect()->route('menu')->with('success', 'Het menu items is verwijderd.');
-        } else {
-            return redirect()->route('menu')->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
+            return redirect()
+                ->route('menu')
+                ->with('success', 'Het menu items is verwijderd.');
         }
+        return redirect()
+            ->route('menu')
+            ->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
     }
 
     public function menu()
@@ -99,6 +109,6 @@ class RecipeController extends Controller
     {
         $recipes = Recipe::inRandomOrder()->limit(3)->get();
 
-        return view('welcome', ['recipes' => $recipes]);
+        return view('welcome', compact('recipes'));
     }
 }

@@ -99,13 +99,15 @@ Route::controller(UserController::class)
         Route::prefix('/users')->group(function () {
             Route::get('/', 'index')->name('manage.users.view');
 
-            Route::prefix('{user}')->group(function () {
-                // Route::get('/create', 'create')->name('manage.users.create');
-                // Route::post('/create', 'create_store')->name('manage.users.create.store');
-                Route::get('/edit', 'edit')->name('manage.users.edit');
-                Route::post('/edit', 'edit_store')->name('manage.users.edit.store');
-                Route::get('/delete', 'delete')->name('manage.users.delete');
-                Route::post('/delete', 'delete_store')->name('manage.users.delete.confirm');
-            });
+            Route::prefix('{user}')
+                ->missing(fn () => ErrorController::handleError(route('manage.users.view'), ['Gebruiker bestaat niet']))
+                ->group(function () {
+                    // Route::get('/create', 'create')->name('manage.users.create');
+                    // Route::post('/create', 'create_store')->name('manage.users.create.store');
+                    Route::get('/edit', 'edit')->name('manage.users.edit');
+                    Route::post('/edit', 'edit_store')->name('manage.users.edit.store');
+                    Route::get('/delete', 'delete')->name('manage.users.delete');
+                    Route::post('/delete', 'delete_store')->name('manage.users.delete.confirm');
+                });
         });
     });

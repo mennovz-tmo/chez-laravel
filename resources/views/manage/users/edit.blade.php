@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 mb-4 section-title">Gebruiker {{ $user['name'] }} aanpassen</h1>
-            <form action="{{ route('manage.users.edit.store', ['user' => $user->id]) }}" method="post"
+            <form action="{{ route('manage.users.edit.store', $user) }}" method="post"
                 class="card p-4 shadow-sm card-body-container">
                 <div class="mb-3">
                     <label for="name" class="form-label">Naam</label>

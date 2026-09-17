@@ -26,12 +26,14 @@ class Register extends Controller
             'password' => Hash::make($validator['password']),
         ]);
 
-        if (! User::where('role', 'owner')->exists()) {
+        if (!User::where('role', 'owner')->exists()) {
             $user->update(['role' => 'owner']);
         }
 
         $user->sendEmailVerificationNotification();
 
-        return redirect()->route('login')->with('success', 'Account aangemaakt! Controleer je e-mail en klik op de link om je e-mailadres te bevestigen.');
+        return redirect()
+            ->route('login')
+            ->with('success', 'Account aangemaakt! Controleer je e-mail en klik op de link om je e-mailadres te bevestigen.');
     }
 }

@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\OpeningDatetime;
-use DateTime;
 use Illuminate\Http\Request;
+use DateTime;
 
 class OpeningDatetimeController extends Controller
 {
     public function index()
     {
-        return view('opening_datetime.index', ['items' => OpeningDatetime::all()->sortBy('date')]);
+        return view('opening_datetime.index')->with(['items' => OpeningDatetime::all()->sortBy('date')]);
     }
 
     public function create(Request $request)
@@ -25,22 +25,28 @@ class OpeningDatetimeController extends Controller
         $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
         $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
         if ($opening > $closing) {
-            return redirect()->route('opening-datetime.view')->withErrors('De opening is na de sluiting.');
+            return redirect()
+                ->route('opening-datetime.view')
+                ->withErrors('De opening is na de sluiting.');
         }
 
-        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect()->route('opening-datetime.view')->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+        if ($request->input('open') && (!$request->filled('opening') || !$request->filled('closing'))) {
+            return redirect()
+                ->route('opening-datetime.view')
+                ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
         OpeningDatetime::create($request->only(['date', 'open', 'opening', 'closing']));
 
-        return redirect()->route('opening-datetime.view')->with('success', 'Toegevoegd.');
+        return redirect()
+            ->route('opening-datetime.view')
+            ->with('success', 'Toegevoegd.');
     }
 
     public function edit(Request $request, OpeningDatetime $openingDatetime)
     {
         if ($request->isMethod('GET')) {
-            return view('opening_datetime.edit', ['item' => $openingDatetime]);
+            return view('opening_datetime.edit')->with(['item' => $openingDatetime]);
         }
         $request->validate([
             'date' => 'required|date',
@@ -49,25 +55,33 @@ class OpeningDatetimeController extends Controller
             'closing' => 'nullable|date_format:H:i',
         ]);
 
-        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect()->route('opening-datetime.edit', ['openingDatetime' => $openingDatetime])->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+        if ($request->input('open') && (!$request->filled('opening') || !$request->filled('closing'))) {
+            return redirect()
+                ->route('opening-datetime.edit', compact('openingDatetime'))
+                ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
         }
 
         $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
         $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
         if ($opening > $closing) {
-            return redirect()->route('opening-datetime.edit', ['openingDatetime' => $openingDatetime])->withErrors('De opening is na de sluiting');
+            return redirect()
+                ->route('opening-datetime.edit', compact('openingDatetime'))
+                ->withErrors('De opening is na de sluiting');
         }
 
         $openingDatetime->update($request->only(['date', 'open', 'opening', 'closing']));
 
-        return redirect()->route('opening-datetime.view')->with('success', 'Aangepast.');
+        return redirect()
+            ->route('opening-datetime.view')
+            ->with('success', 'Aangepast.');
     }
 
     public function delete(OpeningDatetime $openingDatetime)
     {
         $openingDatetime->delete();
 
-        return redirect()->route('opening-datetime.view')->with('success', 'Verwijderd.');
+        return redirect()
+            ->route('opening-datetime.view')
+            ->with('success', 'Verwijderd.');
     }
 }

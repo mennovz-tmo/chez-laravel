@@ -11,7 +11,8 @@ class EmailVerificationController extends Controller
     public function notice(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('welcome');
+            return redirect()
+                ->route('welcome');
         }
 
         return view('auth.verify');
@@ -21,17 +22,21 @@ class EmailVerificationController extends Controller
     {
         $request->fulfill();
 
-        return redirect()->route('welcome')->with('success', 'Je e-mailadres is geverifieerd!');
+        return redirect()
+            ->route('welcome')
+            ->with('success', 'Je e-mailadres is geverifieerd!');
     }
 
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('welcome');
+            return redirect()
+                ->route('welcome');
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('success', 'Er is een nieuwe verificatielink naar je e-mailadres gestuurd.');
+        return back()
+            ->with('success', 'Er is een nieuwe verificatielink naar je e-mailadres gestuurd.');
     }
 }
