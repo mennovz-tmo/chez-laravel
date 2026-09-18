@@ -1,3 +1,3 @@
-- [ ] Refactor the `ReservationController.php`.
-- [ ] Refactor the `OpeningDateTimeController.php`.
-- [ ] Fix problem where you can put more than 1 custom opening time on a date.
+- [X] Refactor the `ReservationController.php`.
+- [X] Refactor the `OpeningDateTimeController.php`.
+- [X] Fix problem where you can put more than 1 custom opening time on a date.
