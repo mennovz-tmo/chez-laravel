@@ -17,7 +17,7 @@ test('guest sees menu', function () {
 });
 
 test('auth user creates recipe', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->state(['role' => 'staff'])->create();
     $this->actingAs($user);
 
     $response = $this->post('/recipe/create', [
@@ -33,7 +33,7 @@ test('auth user creates recipe', function () {
 });
 
 test('recipe edit updates data', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->state(['role' => 'staff'])->create();
     $recipe = Recipe::factory()->create();
     $this->actingAs($user);
 

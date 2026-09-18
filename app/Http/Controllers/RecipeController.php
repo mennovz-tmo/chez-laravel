@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RecipeCreateRequest;
+use App\Http\Requests\RecipeEditRequest;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 
@@ -12,20 +14,12 @@ class RecipeController extends Controller
         return view('recipe.index');
     }
 
-    public function edit(Request $request, Recipe $recipe)
+    public function edit(RecipeEditRequest $request, Recipe $recipe)
     {
         if ($request->isMethod('GET')) {
             return view('recipe.edit', compact('recipe'))
                 ->with('current_data', $recipe);
         }
-
-        $request->validate([
-            'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
-            'description_short' => ['required', 'min:1', 'max:1024'],
-            'allergens' => ['required', 'string', 'min:1'],
-            'price' => ['required', 'decimal:2', 'min:0.01'],
-            'picture' => ['nullable', 'image'],
-        ]);
 
         $picture_loc = false;
         if ($request->hasFile('picture') && $request->file('picture')->isValid()) {
@@ -35,12 +29,7 @@ class RecipeController extends Controller
                 ->store('images', 'public');
         }
 
-        $data = [
-            'name' => $request->input('name'),
-            'description_short' => $request->input('description_short'),
-            'allergens' => $request->input('allergens'),
-            'price' => $request->input('price'),
-        ];
+        $data = $request->safe()->except(['picture']);
 
         if ($picture_loc) {
             $data['picture'] = $picture_loc;
@@ -53,16 +42,8 @@ class RecipeController extends Controller
             ->with('success', 'Het menu item is aangepast.');
     }
 
-    public function create(Request $request)
+    public function create(RecipeCreateRequest $request)
     {
-        $validator = $request->validate([
-            'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
-            'description_short' => ['required', 'min:1', 'max:1024'],
-            'allergens' => ['required', 'string', 'min:1'],
-            'price' => ['required', 'decimal:2', 'min:0.01'],
-            'picture' => ['required', 'image'],
-        ]);
-
         $picture_loc = '/storage/';
         if ($request->file('picture')->isValid()) {
             $picture_loc .= $request
@@ -72,10 +53,10 @@ class RecipeController extends Controller
         }
 
         Recipe::fillAndInsert([
-            'name' => $request->input('name'),
-            'description_short' => $request->input('description_short'),
-            'allergens' => $request->input('allergens'),
-            'price' => $request->input('price'),
+            'name' => $request->validated('name'),
+            'description_short' => $request->validated('description_short'),
+            'allergens' => $request->validated('allergens'),
+            'price' => $request->validated('price'),
             'picture' => $picture_loc,
         ]);
 

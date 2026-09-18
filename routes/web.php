@@ -114,7 +114,7 @@ Route::controller(UserController::class)
                     // Route::get('/create', 'create')->name('manage.users.create');
                     // Route::post('/create', 'create_store')->name('manage.users.create.store');
                     Route::get('/edit', 'edit')->name('manage.users.edit');
-                    Route::post('/edit', 'edit_store')->name('manage.users.edit.store');
+                    Route::post('/edit', 'store')->name('manage.users.edit.store');
                     Route::get('/delete', 'delete')->name('manage.users.delete');
                     Route::post('/delete', 'delete_store')->name('manage.users.delete.confirm');
                 });

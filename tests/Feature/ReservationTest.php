@@ -78,7 +78,7 @@ test('reservation is rejected outside the special opening times even when within
         'closing' => '16:00',
     ]);
 
-    $this->post('/reservation/create', [
+    $this->from('/reservation/create')->post('/reservation/create', [
         'name' => 'Jesse',
         'amount_of_people' => 2,
         'phone_number' => '0612345678',

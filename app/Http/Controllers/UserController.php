@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserEditRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
-
-use function in_array;
 
 class UserController extends Controller
 {
@@ -34,34 +32,9 @@ class UserController extends Controller
             ->with('user', $user);
     }
 
-    public function edit_store(Request $request, User $user)
+    public function store(UserEditRequest $request, User $user)
     {
-        $validator = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'role' => 'required|string',
-        ]);
-
-        $new_email = User::select('id', 'email')->where('email', '=', $validator['email'])->get()->toArray();
-        if (! empty($new_email)) {
-            if ($user->id != $new_email[0]['id']) {
-                return redirect()
-                    ->route('manage.users.edit', compact('user'))
-                    ->withErrors('Het email dat is ingevuld wordt al gebruikt door een andere gebruiker.');
-            }
-        }
-
-        if (! in_array($validator['role'], ['staff', 'consumer'])) {
-            return redirect()
-                ->route('manage.users.edit', compact('user'))
-                ->withErrors('De ingevoerde rol is ongeldig en kan alleen \'staff\' of \'gebruiker\' zijn');
-        }
-
-        $user->update([
-            'name' => $validator['name'],
-            'email' => $validator['email'],
-            'role' => $validator['role'],
-        ]);
+        $user->update($request->validated());
 
         return redirect()
             ->route('manage.users.view')
