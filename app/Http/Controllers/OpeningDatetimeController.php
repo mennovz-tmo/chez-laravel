@@ -4,39 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\OpeningDatetime;
 use DateTime;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class OpeningDatetimeController extends Controller
 {
     public function index()
     {
-        return view('opening_datetime.index')->with(['items' => OpeningDatetime::all()->sortBy('date')]);
+        return view('opening_datetime.index')->with(['items' => OpeningDatetime::all()->sortByDesc('date')]);
     }
 
-    public function create(Request $request)
+    private function validate_opening_datetime(Request $request, ?OpeningDatetime $openingDatetime = null): array|RedirectResponse
     {
-        $request->validate([
+        $redirect_with_error = function (string $message) use ($openingDatetime) {
+            $redirect = $openingDatetime
+                ? redirect()->route('opening-datetime.edit', compact('openingDatetime'))
+                : redirect()->route('opening-datetime.view');
+
+            return $redirect->withErrors($message);
+        };
+
+        $validated = $request->validate([
             'date' => 'required|date',
             'open' => 'required|boolean',
             'opening' => 'nullable|date_format:H:i',
             'closing' => 'nullable|date_format:H:i',
         ]);
 
-        $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
-        $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
+        $existing_date = OpeningDatetime::select('date')->where('date', '=', $validated['date'])->get();
+        if ($existing_date->count() > 0) {
+            $redirect_with_error('De ingevulde datum heeft al speciale data.');
+        }
+
+        if ($validated['open'] && (! $request->filled('opening') || ! $request->filled('closing'))) {
+            return $redirect_with_error('Als je open bent moet je wel tijden aangeven dat je open bent.');
+        }
+
+        $opening = DateTime::createFromFormat('H:i', $validated['opening'] ?? '');
+        $closing = DateTime::createFromFormat('H:i', $validated['closing'] ?? '');
         if ($opening > $closing) {
-            return redirect()
-                ->route('opening-datetime.view')
-                ->withErrors('De opening is na de sluiting.');
+            return $redirect_with_error('De opening is na de sluiting.');
         }
 
-        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect()
-                ->route('opening-datetime.view')
-                ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+        return $validated;
+    }
+
+    public function create(Request $request)
+    {
+        $validated = $this->validate_opening_datetime($request);
+
+        if ($validated instanceof RedirectResponse) {
+            return $validated;
         }
 
-        OpeningDatetime::create($request->only(['date', 'open', 'opening', 'closing']));
+        OpeningDatetime::create($validated);
 
         return redirect()
             ->route('opening-datetime.view')
@@ -48,28 +69,13 @@ class OpeningDatetimeController extends Controller
         if ($request->isMethod('GET')) {
             return view('opening_datetime.edit')->with(['item' => $openingDatetime]);
         }
-        $request->validate([
-            'date' => 'required|date',
-            'open' => 'required|boolean',
-            'opening' => 'nullable|date_format:H:i',
-            'closing' => 'nullable|date_format:H:i',
-        ]);
+        $validated = $this->validate_opening_datetime($request, $openingDatetime);
 
-        if ($request->input('open') && (! $request->filled('opening') || ! $request->filled('closing'))) {
-            return redirect()
-                ->route('opening-datetime.edit', compact('openingDatetime'))
-                ->withErrors('Als je open bent moet je wel tijden aangeven dat je open bent.');
+        if ($validated instanceof RedirectResponse) {
+            return $validated;
         }
 
-        $opening = DateTime::createFromFormat('H:i', $request->input('opening'));
-        $closing = DateTime::createFromFormat('H:i', $request->input('closing'));
-        if ($opening > $closing) {
-            return redirect()
-                ->route('opening-datetime.edit', compact('openingDatetime'))
-                ->withErrors('De opening is na de sluiting');
-        }
-
-        $openingDatetime->update($request->only(['date', 'open', 'opening', 'closing']));
+        $openingDatetime->update($validated);
 
         return redirect()
             ->route('opening-datetime.view')

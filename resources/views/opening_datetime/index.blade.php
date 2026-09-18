@@ -1,7 +1,40 @@
 @extends('layouts.page')
 
 @section('content')
-    <h1 class="display-5 section-title mb-4">Speciale openingstijden</h1>
+    @if (is_staff())
+        <h1 class="section-title">Nieuw</h1>
+        <form
+            method="post"
+            action="{{ route('opening-datetime.create') }}"
+            class="card card-body-container p-4 shadow-sm"
+        >
+            @csrf
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="date" class="form-label">Datum</label>
+                    <input name="date" id="date" type="date" required class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label for="open" class="form-label">Status</label>
+                    <select name="open" id="open" class="form-control">
+                        <option value="1">Open</option>
+                        <option value="0">Gesloten</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="opening" class="form-label">Opening</label>
+                    <input name="opening" id="opening" type="time" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label for="closing" class="form-label">Sluiting</label>
+                    <input name="closing" id="closing" type="time" class="form-control" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-dark btn-rust mt-4">Toevoegen</button>
+        </form>
+    @endif
+
+    <h2 class="display-5 section-title mb-4">Speciale openingstijden</h2>
     <table class="table">
         <thead>
             <tr>
@@ -50,37 +83,4 @@
             @endforeach
         </tbody>
     </table>
-
-    @if (is_staff())
-        <h2 class="section-title">Nieuw</h2>
-        <form
-            method="post"
-            action="{{ route('opening-datetime.create') }}"
-            class="card card-body-container p-4 shadow-sm"
-        >
-            @csrf
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="date" class="form-label">Datum</label>
-                    <input name="date" id="date" type="date" required class="form-control" />
-                </div>
-                <div class="col-md-4">
-                    <label for="open" class="form-label">Status</label>
-                    <select name="open" id="open" class="form-control">
-                        <option value="1">Open</option>
-                        <option value="0">Gesloten</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="opening" class="form-label">Opening</label>
-                    <input name="opening" id="opening" type="time" class="form-control" />
-                </div>
-                <div class="col-md-4">
-                    <label for="closing" class="form-label">Sluiting</label>
-                    <input name="closing" id="closing" type="time" class="form-control" />
-                </div>
-            </div>
-            <button type="submit" class="btn btn-dark btn-rust mt-4">Toevoegen</button>
-        </form>
-    @endif
 @endsection
