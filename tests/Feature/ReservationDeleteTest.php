@@ -60,7 +60,7 @@ test('guest confirms deletion with valid token from email', function () {
 
 test('guest cannot delete with invalid token', function () {
     $reservation = deletableReservation();
-    $reservation->generateDeleteToken();
+    $reservation->generate_delete_token();
 
     $response = $this->get("/reservation/{$reservation->id}/delete/invalid-token");
 
@@ -70,7 +70,7 @@ test('guest cannot delete with invalid token', function () {
 
 test('expired token does not delete and is cleared', function () {
     $reservation = deletableReservation();
-    $plainToken = $reservation->generateDeleteToken();
+    $plainToken = $reservation->generate_delete_token();
     $reservation->forceFill(['delete_token_expires_at' => now()->subHour()])->save();
 
     $response = $this->get("/reservation/{$reservation->id}/delete/{$plainToken}");

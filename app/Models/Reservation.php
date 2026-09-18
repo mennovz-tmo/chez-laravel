@@ -31,7 +31,7 @@ class Reservation extends Model
      * Generate a new delete token, store only its hash + expiry, and
      * return the plaintext token so it can be e-mailed.
      */
-    public function generateDeleteToken(): string
+    public function generate_delete_token(): string
     {
         $plainToken = Str::random(64);
 
@@ -46,7 +46,7 @@ class Reservation extends Model
     /**
      * Check a plaintext token against the stored hash and expiry.
      */
-    public function hasValidDeleteToken(?string $plainToken): bool
+    public function has_valid_delete_token(?string $plainToken): bool
     {
         if (empty($plainToken) || empty($this->delete_token) || empty($this->delete_token_expires_at)) {
             return false;
@@ -62,7 +62,7 @@ class Reservation extends Model
     /**
      * Invalidate the pending delete token.
      */
-    public function clearDeleteToken(): void
+    public function clear_delete_token(): void
     {
         $this->forceFill([
             'delete_token' => null,

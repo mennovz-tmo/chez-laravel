@@ -24,7 +24,7 @@
                             <p class="mb-2 text-small-rust">Allergenen: {{ $recipe->allergens }}</p>
                             <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
                                 <span class="h4 mb-0 price-display">€{{ $recipe->price }}</span>
-                                @if (isStaff())
+                                @if (is_staff())
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('recipe.edit', $recipe) }}" class="btn btn-outline-dark btn-sm">Bewerk</a>
                                         <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"

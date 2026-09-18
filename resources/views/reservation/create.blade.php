@@ -10,13 +10,13 @@
                     <div class="col-md-6">
                         <label for="name" class="form-label">Naam</label>
                         <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe"
-                            value="@if (Auth::check() && !isStaff() && old('name') == null){{ Auth::user()->name }}@else{{ old('name') }}@endif">
+                            value="@if (Auth::check() && !is_staff() && old('name') == null){{ Auth::user()->name }}@else{{ old('name') }}@endif">
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <input required type="email" class="form-control" name="email" id="email"
                             placeholder="mail@example.com"
-                            value="@if (Auth::check() && !isStaff() && old('email') == null){{ Auth::user()->email }}@else{{ old('email') }}@endif">
+                            value="@if (Auth::check() && !is_staff() && old('email') == null){{ Auth::user()->email }}@else{{ old('email') }}@endif">
                     </div>
                     <div class="col-md-6">
                         <label for="phone_number" class="form-label">Telefoon</label>
@@ -58,7 +58,7 @@
                 <p>Heb je al een reservering? <a href="{{ route('reservation.view') }}">Bekijk hier</a>.</p>
             </div>
 
-            @if (Auth::check() && !isStaff() || !Auth::check())
+            @if (Auth::check() && !is_staff() || !Auth::check())
                 <div class="mt-3 card p-4 shadow-sm card-body-container">
                     <p class="m-0 p-0">
                         Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze <a

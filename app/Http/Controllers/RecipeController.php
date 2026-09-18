@@ -86,17 +86,11 @@ class RecipeController extends Controller
 
     public function delete(Request $request, Recipe $recipe)
     {
-        if ($recipe != null) {
-            $recipe->delete();
-
-            return redirect()
-                ->route('menu')
-                ->with('success', 'Het menu items is verwijderd.');
-        }
+        $recipe->delete();
 
         return redirect()
             ->route('menu')
-            ->withErrors('Het menu item dat verwijderd zou worden bestaat niet!');
+            ->with('success', 'Het menu items is verwijderd.');
     }
 
     public function menu()

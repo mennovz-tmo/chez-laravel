@@ -10,11 +10,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('manage-accounts', function ($user) {
-            return isOwner();
+            return is_owner();
         });
 
         Gate::define('manage-content', function ($user) {
-            return isStaff();
+            return is_staff();
         });
     }
 }

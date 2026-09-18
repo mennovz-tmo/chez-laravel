@@ -14,20 +14,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Spatie\LaravelPdf\Facades\Pdf;
 
-use function in_array;
+use function count;
 
 class ReservationController extends Controller
 {
     public function delete(Request $request, Reservation $reservation, ?string $delete_token = null)
     {
-        if ($reservation == null) {
-            return redirect()
-                ->route('reservation.view')
-                ->withErrors('De reservering die verwijderd zou worden bestaat niet!')
-                ->withInput();
-        }
-
-        if (Auth::check() && isStaff()) {
+        if (Auth::check() && is_staff()) {
             $reservation->delete();
 
             return redirect()
@@ -35,7 +28,7 @@ class ReservationController extends Controller
                 ->with('success', 'De reservering is verwijderd');
         }
 
-        if (! $this->isDeletionAllowed($reservation)) {
+        if (! $this->is_reservation_deletion_allowed($reservation)) {
             return redirect()
                 ->route('reservation.view')
                 ->withErrors('De reservering die verwijderd zou worden kan niet meer verwijderd worden omdat het minder dan 12 uur voor de reservering is! Bel om de annulering te overleggen')
@@ -51,7 +44,7 @@ class ReservationController extends Controller
         }
 
         if ($delete_token == null) {
-            $plainToken = $reservation->generateDeleteToken();
+            $plainToken = $reservation->generate_delete_token();
 
             Mail::to($reservation->email)
                 ->send(new ReservationDeleteRequested($reservation, $plainToken));
@@ -61,7 +54,7 @@ class ReservationController extends Controller
         }
 
         if ($reservation->delete_token_expires_at !== null && $reservation->delete_token_expires_at->isPast()) {
-            $reservation->clearDeleteToken();
+            $reservation->clear_delete_token();
 
             return redirect()
                 ->route('reservation.view')
@@ -69,7 +62,7 @@ class ReservationController extends Controller
                 ->withInput();
         }
 
-        if (! $reservation->hasValidDeleteToken($delete_token)) {
+        if (! $reservation->has_valid_delete_token($delete_token)) {
             return redirect()
                 ->route('reservation.view')
                 ->withErrors('Deze link om een reservering te verwijderen is niet geldig!')
@@ -83,10 +76,7 @@ class ReservationController extends Controller
             ->with('success', 'De reservering is verwijderd');
     }
 
-    /**
-     * A guest may only delete up to 12 hours before the reservation.
-     */
-    private function isDeletionAllowed(Reservation $reservation): bool
+    private function is_reservation_deletion_allowed(Reservation $reservation): bool
     {
         $datetime_of_reservation = new DateTime("{$reservation->date->format('Y-m-d')} {$reservation->arrival}");
 
@@ -109,11 +99,33 @@ class ReservationController extends Controller
         return view('reservation.show', compact('reservation'));
     }
 
+    private function is_any_input_filled(Request $request, array $fields): bool
+    {
+        for ($i = 0; $i < count($fields); $i++) {
+            if ($request->filled($fields[$i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function are_all_inputs_filled(Request $request, array $fields): bool
+    {
+        for ($i = 0; $i < count($fields); $i++) {
+            if (! $request->filled($fields[$i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function view(Request $request)
     {
         $query = Reservation::query();
 
-        if (Auth::check() && $request->input('email') == null && isStaff() && $request->input('start') == null && $request->input('end') == null && $request->input('name') == null) {
+        if (Auth::check() && is_staff() && ! $this->is_any_input_filled($request, ['email', 'end', 'start', 'name'])) {
             return view('reservation.view')
                 ->with('reservations', $query
                     ->orderByDesc('date')
@@ -121,7 +133,7 @@ class ReservationController extends Controller
                     ->get());
         }
 
-        if (Auth::check() && $request->input('email') == null && ! isStaff() && $request->input('start') == null && $request->input('end') == null && $request->input('name') == null) {
+        if (Auth::check() && ! is_staff() && ! $this->is_any_input_filled($request, ['email', 'end', 'start', 'name'])) {
             return view('reservation.view')
                 ->with('reservations', $query
                     ->where('email', '=', Auth::user()->email)
@@ -130,56 +142,55 @@ class ReservationController extends Controller
                     ->get());
         }
 
-        $method = $request->getMethod();
-        if (in_array($method, ['POST', 'GET']) && ($request->filled('start') || $request->filled('end') || $request->filled('name') || $request->filled('email'))) {
-            $validated = $request->validate([
-                'start' => ['nullable', 'date', 'date_format:Y-m-d'],
-                'end' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:start'],
-                'email' => ['nullable', 'email', 'min:5'],
-                'name' => ['nullable', 'string', 'min:1', 'max:255'],
-            ], [
-                'end.after_or_equal' => 'De einddatum moet gelijk zijn aan of na de startdatum.',
-            ]);
+        $validated = $request->validate([
+            'start' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'end' => ['nullable', 'date', 'date_format:Y-m-d', 'after_or_equal:start'],
+            'email' => ['nullable', 'email', 'min:5'],
+            'name' => ['nullable', 'string', 'min:1', 'max:255'],
+        ], [
+            'end.after_or_equal' => 'De einddatum moet gelijk zijn aan of na de startdatum.',
+        ]);
 
-            if (! Auth::check() && ! $request->filled('name') && ! $request->filled('email')) {
-                return redirect()
-                    ->route('reservation.view')
-                    ->withErrors('Je moet zoeken met email of exacte naam als gast!')
-                    ->withInput();
-            }
-
-            if ($request->filled('start') && $request->filled('end')) {
-                $query->whereBetween('date', [$validated['start'], $validated['end']]);
-            } elseif ($request->filled('start')) {
-                $query->where('date', $validated['start']);
-            }
-
-            if ($request->filled('name')) {
-                if (Auth::check()) {
-                    $query->where('name', 'like', '%'.$validated['name'].'%');
-                } else {
-                    $query->where('name', '=', $validated['name']);
-                }
-            }
-
-            if ($request->filled('email')) {
-                $query->where('email', $validated['email']);
-            }
-
-            $reservations = $query
-                ->orderByDesc('date')
-                ->orderByDesc('arrival')
-                ->get();
-
-            return view('reservation.view')
-                ->with('reservations', $reservations)
-                ->with('email', $request->input('email'))
-                ->with('name', $request->input('name'))
-                ->with('start', $request->input('start'))
-                ->with('end', $request->input('end'));
+        if (! Auth::check() && ! $this->is_any_input_filled($request, ['name', 'email', 'start', 'end'])) {
+            return view('reservation.view');
         }
 
-        return view('reservation.view');
+        if (! Auth::check() && ! $this->is_any_input_filled($request, ['name', 'email'])) {
+            return redirect()
+                ->route('reservation.view')
+                ->withErrors('Je moet zoeken met email of exacte naam als gast!')
+                ->withInput();
+        }
+
+        if ($this->are_all_inputs_filled($request, ['start', 'end'])) {
+            $query->whereBetween('date', [$validated['start'], $validated['end']]);
+        } elseif ($request->filled('start')) {
+            $query->where('date', $validated['start']);
+        }
+
+        if ($request->filled('name')) {
+            if (Auth::check()) {
+                $query->where('name', 'like', '%'.$validated['name'].'%');
+            } else {
+                $query->where('name', '=', $validated['name']);
+            }
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', $validated['email']);
+        }
+
+        $reservations = $query
+            ->orderByDesc('date')
+            ->orderByDesc('arrival')
+            ->get();
+
+        return view('reservation.view')
+            ->with('reservations', $reservations)
+            ->with('email', $request->input('email'))
+            ->with('name', $request->input('name'))
+            ->with('start', $request->input('start'))
+            ->with('end', $request->input('end'));
     }
 
     public function create(Request $request)

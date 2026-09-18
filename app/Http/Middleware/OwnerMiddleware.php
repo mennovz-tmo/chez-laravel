@@ -10,7 +10,7 @@ class OwnerMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! isOwner()) {
+        if (! is_owner()) {
             return redirect()->route('welcome')->withErrors('U heeft geen toegang om die pagina te bekijken.');
         }
 

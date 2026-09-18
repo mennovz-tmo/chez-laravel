@@ -56,7 +56,7 @@
             </form>
             <div class="mt-3 card p-4 shadow-sm card-body-container">
                 <p class="m-0 p-0">
-                    @if (Auth::check() && !isStaff() || !Auth::check())
+                    @if (Auth::check() && !is_staff() || !Auth::check())
                         Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze 
                         <a href="{{ route('opening-datetime.view') }}">hier</a>
                     @else

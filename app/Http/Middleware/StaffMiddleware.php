@@ -10,7 +10,7 @@ class StaffMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! isStaff()) {
+        if (! is_staff()) {
             return redirect()->route('welcome')->withErrors('U heeft geen toegang om die pagina te bekijken.');
         }
 

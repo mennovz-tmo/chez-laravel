@@ -9,7 +9,7 @@
                 <th>Open</th>
                 <th>Opening</th>
                 <th>Sluiting</th>
-                @if (isStaff())
+                @if (is_staff())
                     <th>Acties</th>
                 @endif
             </tr>
@@ -29,7 +29,7 @@
                             {{ $item->closing->format('H:i') }}
                         @endif
                     </td>
-                    @if (isStaff())
+                    @if (is_staff())
                         <td>
                             <a href="{{ route('opening-datetime.edit', ['openingDatetime' => $item->id]) }}" class="btn btn-sm btn-outline-dark">Bewerk</a>
                             <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
@@ -43,7 +43,7 @@
         </tbody>
     </table>
 
-    @if (isStaff())
+    @if (is_staff())
         <h2 class="section-title">Nieuw</h2>
         <form method="post" action="{{ route('opening-datetime.create') }}" class="card p-4 shadow-sm card-body-container">
             @csrf

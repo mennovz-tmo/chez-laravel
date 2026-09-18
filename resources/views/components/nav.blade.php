@@ -25,7 +25,7 @@
                         </li>
                     </ul>
                 </li>
-                @if (isStaff())
+                @if (is_staff())
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">beheer</a>
                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm dropdown-menu-custom">
                         <li>
@@ -57,7 +57,7 @@
                         <li>
                             <hr class="dropdown-divider dropdown-divider-custom">
                         </li>
-                        @if (isOwner())
+                        @if (is_owner())
                             <li>
                                 <a class="dropdown-item" href="{{ route('manage.users.view') }}">
                                     gebruikers beheren
@@ -79,7 +79,7 @@
                             </a>
                         </li>
                     </ul>
-                @elseif (Auth::check() && !isStaff())
+                @elseif (Auth::check() && !is_staff())
                     <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">uitloggen</a></li>
                 @else
                     <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>

@@ -12,6 +12,6 @@ test('reservation generates number on create', function () {
 
 test('delete token generates and validates', function () {
     $res = Reservation::factory()->create();
-    $token = $res->generateDeleteToken();
-    expect($res->hasValidDeleteToken($token))->toBeTrue();
+    $token = $res->generate_delete_token();
+    expect($res->has_valid_delete_token($token))->toBeTrue();
 });

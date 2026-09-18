@@ -11,12 +11,12 @@ function generate_reservation_number(): string
     return $reservation_number;
 }
 
-function isOwner(): bool
+function is_owner(): bool
 {
     return auth()->check() && auth()->user()->role === 'owner';
 }
 
-function isStaff(): bool
+function is_staff(): bool
 {
     return auth()->check() && (auth()->user()->role === 'owner' || auth()->user()->role === 'staff');
 }

@@ -33,7 +33,7 @@
                     <div class="@auth col-md-6 @endauth @guest col-md-12 @endguest">
                         <button type="submit" class="btn btn-primary w-100">Zoek</button>
                     </div>
-                    @if (isStaff())
+                    @if (is_staff())
                         <div class="col-md-6 d-flex gap-2">
                             <a href="{{ route('reservation.view', ['start' => now()->format('Y-m-d'), 'end' => now()->format('Y-m-d')]) }}"
                                 class="btn btn-outline-dark w-50">Vandaag</a>
@@ -65,12 +65,12 @@
                                         <p class="mb-1 text-subtitle">
                                             {{ $reservation->date->format('d-m-Y') }} vanaf {{ $arrival }} voor {{ $reservation->amount_of_people }} personen.
                                         </p>
-                                        @if (isStaff())
+                                        @if (is_staff())
                                             <p class="mb-0 text-small-rust">Telefoon: {{ $reservation->phone_number }}</p>
                                         @endif
                                     </div>
                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                                        @if (isStaff())
+                                        @if (is_staff())
                                             <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom"
                                                 data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $reservation->id }}">Verwijder</button>
                                             @include('components.confirm-modal', ['uid' => 'res-' . $reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt permanent verwijderd.'])
