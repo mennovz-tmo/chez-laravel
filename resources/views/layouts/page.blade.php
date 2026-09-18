@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="nl">
-
 @include('components.head')
 
 <body class="d-flex flex-column min-vh-100">
@@ -8,15 +7,12 @@
         @include('components.nav')
     </header>
 
-    <main class="container py-5 flex-grow-1">
+    <main class="container flex-grow-1 py-5">
         @include('components.error')
 
         @yield('content')
     </main>
 
-    <footer class="text-center py-4 mt-auto footer-text">
-        &copy; Chez Laravel Est. 1974
-    </footer>
+    <footer class="footer-text mt-auto py-4 text-center">&copy; Chez Laravel Est. 1974</footer>
 </body>
-
 </html>

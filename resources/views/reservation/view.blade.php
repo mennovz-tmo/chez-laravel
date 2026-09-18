@@ -3,30 +3,54 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="display-5 mb-4 section-title">Zoek reservering</h1>
-            <form action="{{ route('reservation.view') }}" method="post" class="card p-4 shadow-sm card-body-container">
+            <h1 class="display-5 section-title mb-4">Zoek reservering</h1>
+            <form action="{{ route('reservation.view') }}" method="post" class="card card-body-container p-4 shadow-sm">
                 @csrf
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label for="start" class="form-label">Van</label>
-                        <input type="date" class="form-control" id="start" name="start"
-                            value="{{ old('start', $start ?? '') }}" min="{{ now()->format('Y-m-d') }}"
-                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}">
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="start"
+                            name="start"
+                            value="{{ old('start', $start ?? '') }}"
+                            min="{{ now()->format('Y-m-d') }}"
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}"
+                        />
                     </div>
                     <div class="col-md-3">
                         <label for="end" class="form-label">Tot</label>
-                        <input type="date" class="form-control" id="end" name="end" value="{{ old('end', $end ?? '') }}"
-                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}">
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="end"
+                            name="end"
+                            value="{{ old('end', $end ?? '') }}"
+                            max="{{ now()->modify('+61 days')->format('Y-m-d') }}"
+                        />
                     </div>
                     <div class="col-md-3">
                         <label for="name" class="form-label">Naam</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Naam"
-                            value="{{ old('name', $name ?? '') }}">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="name"
+                            name="name"
+                            placeholder="Naam"
+                            value="{{ old('name', $name ?? '') }}"
+                        />
                     </div>
                     <div class="col-md-3">
                         <label for="email" class="form-label">Emailadres</label>
-                        <input type="text" class="form-control" id="email" name="email" placeholder="john@example.com"
-                            value="{{ old('email', $email ?? '') }}">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            placeholder="john@example.com"
+                            value="{{ old('email', $email ?? '') }}"
+                        />
                     </div>
                 </div>
                 <div class="row g-2 mt-2">
@@ -35,61 +59,90 @@
                     </div>
                     @if (is_staff())
                         <div class="col-md-6 d-flex gap-2">
-                            <a href="{{ route('reservation.view', ['start' => now()->format('Y-m-d'), 'end' => now()->format('Y-m-d')]) }}"
-                                class="btn btn-outline-dark w-50">Vandaag</a>
-                            <a href="{{ route('reservation.view', ['start' => now()->addDay()->format('Y-m-d'), 'end' => now()->addDay()->format('Y-m-d')]) }}"
-                                class="btn btn-outline-dark w-50">Morgen</a>
+                            <a
+                                href="{{ route('reservation.view', ['start' => now()->format('Y-m-d'), 'end' => now()->format('Y-m-d')]) }}"
+                                class="btn btn-outline-dark w-50"
+                            >Vandaag</a>
+                            <a
+                                href="{{ route('reservation.view', ['start' => now()->addDay()->format('Y-m-d'), 'end' => now()->addDay()->format('Y-m-d')]) }}"
+                                class="btn btn-outline-dark w-50"
+                            >Morgen</a>
                         </div>
                     @endif
                 </div>
             </form>
 
-            @if (!empty($reservations))
-                <h2 class="h3 mt-5 mb-3 card-title">
-                    @if (!empty($email)) Reserveringen voor {{ $email }} @else Reserveringen @endif
-                    @if (!empty($start)) <small class="text-muted">tussen {{ $start }} en {{ $end ?? $start }}</small> @endif
+            @if (! empty($reservations))
+                <h2 class="h3 card-title mt-5 mb-3">
+                    @if (! empty($email)) Reserveringen voor{{ $email }} @else Reserveringen @endif
+                    @if (! empty($start))
+                        <small class="text-muted">tussen {{ $start }} en {{ $end ?? $start }}</small>
+                    @endif
                 </h2>
                 <div class="row g-3">
                     @forelse ($reservations as $reservation)
                         <div class="col-12">
-                            <div class="card shadow-sm p-3 card-body-container">
+                            <div class="card card-body-container p-3 shadow-sm">
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <h3 class="h5 mb-2 card-title">{{ $reservation->name }}</h3>
+                                        <h3 class="h5 card-title mb-2">{{ $reservation->name }}</h3>
                                         @php
-//                                            dd($reservation->date);
+                                            //                                            dd($reservation->date);
                                             $date = $reservation['date']->format('d-m-Y');
                                             $arrival = explode(':', $reservation['arrival']);
                                             $arrival = "$arrival[0]:$arrival[1]";
                                         @endphp
-                                        <p class="mb-1 text-subtitle">
+                                        <p class="text-subtitle mb-1">
                                             {{ $reservation->date->format('d-m-Y') }} vanaf {{ $arrival }} voor {{ $reservation->amount_of_people }} personen.
                                         </p>
                                         @if (is_staff())
-                                            <p class="mb-0 text-small-rust">Telefoon: {{ $reservation->phone_number }}</p>
+                                            <p class="text-small-rust mb-0">
+                                                Telefoon: {{ $reservation->phone_number }}
+                                            </p>
                                         @endif
                                     </div>
-                                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                                    <div class="col-md-4 text-md-end mt-md-0 mt-2">
                                         @if (is_staff())
-                                            <button type="button" class="btn btn-dark btn-sm mt-1 btn-dark-custom"
-                                                data-bs-toggle="modal" data-bs-target="#confirmModal-res-{{ $reservation->id }}">Verwijder</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt permanent verwijderd.'])
-                                            <a href="{{ route('reservation.show', $reservation->id) }}"
-                                                class="btn btn-outline-dark btn-sm mt-1">Bekijk</a>
-                                            <a href="{{ route('reservation.edit', $reservation->id) }}"
-                                                class="btn btn-outline-dark btn-sm mt-1">Bewerk</a>
+                                            <button
+                                                type="button"
+                                                class="btn btn-dark btn-sm btn-dark-custom mt-1"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmModal-res-{{ $reservation->id }}"
+                                            >
+                                                Verwijder
+                                            </button>
+                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt permanent verwijderd.'])
+                                            <a
+                                                href="{{ route('reservation.show', $reservation->id) }}"
+                                                class="btn btn-outline-dark btn-sm mt-1"
+                                            >Bekijk</a>
+                                            <a
+                                                href="{{ route('reservation.edit', $reservation->id) }}"
+                                                class="btn btn-outline-dark btn-sm mt-1"
+                                            >Bewerk</a>
                                         @else
-                                            <button type="button" class="btn btn-dark btn-sm btn-dark-custom" data-bs-toggle="modal"
-                                                data-bs-target="#confirmModal-res-{{ $reservation->id }}">Annuleer</button>
-                                            @include('components.confirm-modal', ['uid' => 'res-' . $reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
-                                            <a href="{{ route('reservation.show', $reservation->id) }}"
-                                                class="btn btn-outline-dark btn-sm">Bekijk</a>
-                                            <a href="{{ route('reservation.pdf', $reservation->id) }}" target="_blank"
-                                                class="btn btn-outline-dark btn-sm mt-2">Download pdf</a>
+                                            <button
+                                                type="button"
+                                                class="btn btn-dark btn-sm btn-dark-custom"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmModal-res-{{ $reservation->id }}"
+                                            >
+                                                Annuleer
+                                            </button>
+                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
+                                            <a
+                                                href="{{ route('reservation.show', $reservation->id) }}"
+                                                class="btn btn-outline-dark btn-sm"
+                                            >Bekijk</a>
+                                            <a
+                                                href="{{ route('reservation.pdf', $reservation->id) }}"
+                                                target="_blank"
+                                                class="btn btn-outline-dark btn-sm mt-2"
+                                            >Download pdf</a>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="mt-2 pt-2 border-top border-top-light">
+                                <div class="border-top border-top-light mt-2 pt-2">
                                     Reserveringsnummer: {{ $reservation->number }} · Gemaakt op {{ $reservation->created_at }}
                                 </div>
                             </div>

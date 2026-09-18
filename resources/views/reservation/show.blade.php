@@ -8,9 +8,9 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            <h1 class="display-5 mb-4 section-title">Reservering details</h1>
-            <div class="card shadow-sm p-4 card-body-container">
-                <h3 class="h4 mb-3 card-title">{{ $reservation->name }}</h3>
+            <h1 class="display-5 section-title mb-4">Reservering details</h1>
+            <div class="card card-body-container p-4 shadow-sm">
+                <h3 class="h4 card-title mb-3">{{ $reservation->name }}</h3>
                 <p class="mb-1"><strong>Personen:</strong> {{ $reservation->amount_of_people }}</p>
                 <p class="mb-1"><strong>Datum:</strong> {{ $reservation->date->format('d-m-Y') }}</p>
                 <p class="mb-1"><strong>Tijd:</strong> {{ $arrival }}</p>
@@ -20,7 +20,7 @@
                 @if ($reservation->comment)
                     <p class="mb-1"><strong>Opmerking:</strong> {{ $reservation->comment }}</p>
                 @endif
-                <p class="mb-0 text-muted text-small-muted">Gemaakt op {{ $reservation->created_at }}</p>
+                <p class="text-muted text-small-muted mb-0">Gemaakt op {{ $reservation->created_at }}</p>
             </div>
         </div>
     </div>

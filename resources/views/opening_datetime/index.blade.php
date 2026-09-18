@@ -1,7 +1,7 @@
 @extends('layouts.page')
 
 @section('content')
-    <h1 class="display-5 mb-4 section-title">Speciale openingstijden</h1>
+    <h1 class="display-5 section-title mb-4">Speciale openingstijden</h1>
     <table class="table">
         <thead>
             <tr>
@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($items as $item)
+            @foreach ($items as $item)
                 <tr>
                     <td>{{ $item->date->format('d-m-Y') }}</td>
                     <td>{{ $item->open ? 'Ja' : 'Nee' }}</td>
@@ -31,10 +31,18 @@
                     </td>
                     @if (is_staff())
                         <td>
-                            <a href="{{ route('opening-datetime.edit', ['openingDatetime' => $item->id]) }}" class="btn btn-sm btn-outline-dark">Bewerk</a>
-                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                data-bs-target="#confirmModal-del{{ $item->id }}">Verwijder</button>
-                            @component('components.confirm-modal', ['uid' => 'del' . $item->id, 'url' => route('opening-datetime.delete', ['openingDatetime' => $item->id]), 'message' => 'Verwijder deze datum?'])
+                            <a
+                                href="{{ route('opening-datetime.edit', ['openingDatetime' => $item->id]) }}"
+                                class="btn btn-sm btn-outline-dark"
+                            >Bewerk</a>
+                            <button
+                                class="btn btn-sm btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmModal-del{{ $item->id }}"
+                            >
+                                Verwijder
+                            </button>
+                            @component('components.confirm-modal', ['uid' => 'del'.$item->id, 'url' => route('opening-datetime.delete', ['openingDatetime' => $item->id]), 'message' => 'Verwijder deze datum?'])
                             @endcomponent
                         </td>
                     @endif
@@ -45,12 +53,16 @@
 
     @if (is_staff())
         <h2 class="section-title">Nieuw</h2>
-        <form method="post" action="{{ route('opening-datetime.create') }}" class="card p-4 shadow-sm card-body-container">
+        <form
+            method="post"
+            action="{{ route('opening-datetime.create') }}"
+            class="card card-body-container p-4 shadow-sm"
+        >
             @csrf
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="date" class="form-label">Datum</label>
-                    <input name="date" id="date" type="date" required class="form-control">
+                    <input name="date" id="date" type="date" required class="form-control" />
                 </div>
                 <div class="col-md-4">
                     <label for="open" class="form-label">Status</label>
@@ -61,11 +73,11 @@
                 </div>
                 <div class="col-md-4">
                     <label for="opening" class="form-label">Opening</label>
-                    <input name="opening" id="opening" type="time" class="form-control">
+                    <input name="opening" id="opening" type="time" class="form-control" />
                 </div>
                 <div class="col-md-4">
                     <label for="closing" class="form-label">Sluiting</label>
-                    <input name="closing" id="closing" type="time" class="form-control">
+                    <input name="closing" id="closing" type="time" class="form-control" />
                 </div>
             </div>
             <button type="submit" class="btn btn-dark btn-rust mt-4">Toevoegen</button>

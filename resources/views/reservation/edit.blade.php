@@ -10,57 +10,112 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="display-5 mb-4 section-title">Reserveren</h1>
-            <form action="{{ route('reservation.edit', ['reservation' => $current_data['id']]) }}" method="post" class="card p-4 shadow-sm card-body-container">
+            <h1 class="display-5 section-title mb-4">Reserveren</h1>
+            <form
+                action="{{ route('reservation.edit', ['reservation' => $current_data['id']]) }}"
+                method="post"
+                class="card card-body-container p-4 shadow-sm"
+            >
                 <div class="m-1">
                     <label for="name" class="form-label">Wat is je naam?</label>
-                    <input required type="text" class="form-control" id="name" name="name" placeholder="John Doe"
-                        value="{{ old('name', $current_data['name']) }}">
+                    <input
+                        required
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        placeholder="John Doe"
+                        value="{{ old('name', $current_data['name']) }}"
+                    />
                 </div>
                 <div class="m-1">
                     <label for="pass" class="form-label">Wat is je email?</label>
-                    <input required type="email" class="form-control" name="email" id="email" placeholder="mail@example.com"
-                        value="{{ old('email', $current_data['email']) }}">
+                    <input
+                        required
+                        type="email"
+                        class="form-control"
+                        name="email"
+                        id="email"
+                        placeholder="mail@example.com"
+                        value="{{ old('email', $current_data['email']) }}"
+                    />
                 </div>
                 <div class="m-1">
                     <label for="pass" class="form-label">Wat is je telefoon nummer?</label>
-                    <input required type="tel" class="form-control" name="phone_number" id="phone_number"
-                        placeholder="Telefoon" value="{{ old('phone_number', $current_data['phone_number']) }}">
+                    <input
+                        required
+                        type="tel"
+                        class="form-control"
+                        name="phone_number"
+                        id="phone_number"
+                        placeholder="Telefoon"
+                        value="{{ old('phone_number', $current_data['phone_number']) }}"
+                    />
                 </div>
                 <div class="m-1">
                     <label for="pass" class="form-label">Voor hoeveel mensen reserveer je?</label>
-                    <input required type="number" class="form-control" name="amount_of_people" id="amount_of_people"
-                        placeholder="bijvoorbeeld: 4" min="1" max="99" value="{{ old('amount_of_people', $current_data['amount_of_people']) }}">
+                    <input
+                        required
+                        type="number"
+                        class="form-control"
+                        name="amount_of_people"
+                        id="amount_of_people"
+                        placeholder="bijvoorbeeld: 4"
+                        min="1"
+                        max="99"
+                        value="{{ old('amount_of_people', $current_data['amount_of_people']) }}"
+                    />
                 </div>
                 <div class="m-1">
                     @php
-                        $min = new Datetime();
+                        $min = new Datetime;
                         $max = $min->modify('+28 days');
                     @endphp
                     <label for="pass" class="form-label">Voor welke datum reserveer je?</label>
-                    <input required type="date" class="form-control" name="date" id="date" min="{{ $min->format('d-m-Y') }}"
-                        max="{{ $max->format('d-m-Y') }}" value="{{ old('date', $date) }}">
+                    <input
+                        required
+                        type="date"
+                        class="form-control"
+                        name="date"
+                        id="date"
+                        min="{{ $min->format('d-m-Y') }}"
+                        max="{{ $max->format('d-m-Y') }}"
+                        value="{{ old('date', $date) }}"
+                    />
                 </div>
                 <div class="m-1">
                     <label for="pass" class="form-label">Welke tijd verwacht je er te zijn?</label>
-                    <input required type="time" class="form-control" name="arrival" id="arrival" min="16:00" max="22:00"
-                        value="{{ old('arrival', $arrival) }}">
+                    <input
+                        required
+                        type="time"
+                        class="form-control"
+                        name="arrival"
+                        id="arrival"
+                        min="16:00"
+                        max="22:00"
+                        value="{{ old('arrival', $arrival) }}"
+                    />
                 </div>
                 <div class="m-1">
                     <label for="pass" class="form-label">Opmerking(en) over de reservering:</label>
-                    <textarea class="form-control" name="comment" id="comment">{{ old('comment', $current_data['comment']) }}</textarea>
+                    <textarea
+                        class="form-control"
+                        name="comment"
+                        id="comment"
+                    >{{ old('comment', $current_data['comment']) }}</textarea>
                 </div>
 
                 @csrf
-                <button type="submit" class="m-2 btn btn-primary">Reservering aanpassen</button>
+                <button type="submit" class="btn btn-primary m-2">Reservering aanpassen</button>
             </form>
-            <div class="mt-3 card p-4 shadow-sm card-body-container">
+            <div class="card card-body-container mt-3 p-4 shadow-sm">
                 <p class="m-0 p-0">
-                    @if (Auth::check() && !is_staff() || !Auth::check())
-                        Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze 
+                    @if (Auth::check() && ! is_staff() || ! Auth::check())
+                        Er zijn data waarop wij aangepaste openingstijden hebben. Bekijk deze
                         <a href="{{ route('opening-datetime.view') }}">hier</a>
                     @else
-                        Let op de aangepaste opeingstijden. Bekijk deze <a href="{{ route('opening-datetime.view') }}">hier</a>
+                        Let op de aangepaste opeingstijden. Bekijk deze
+                        <a href="{{ route('opening-datetime.view') }}">hier</a>
                     @endif
                 </p>
             </div>
