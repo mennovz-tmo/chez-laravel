@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
     ->group(function () {
-        Route::get('/logout', Logout::class)->name('logout');
+        Route::post('/logout', Logout::class)->name('logout');
 
         Route::controller(UserController::class)
             ->middleware('guest')
@@ -49,7 +49,7 @@ Route::controller(RecipeController::class)
             ->prefix('{recipe}')
             ->missing(fn () => ErrorController::handleError(route('menu'), ['Het id dat is opgevraagd bestaat niet.']))
             ->group(function () {
-                Route::get('/delete', 'delete')->name('recipe.delete');
+                Route::post('/delete', 'delete')->name('recipe.delete');
                 Route::match(['get', 'post'], '/edit', 'edit')->name('recipe.edit');
             });
     });
@@ -77,7 +77,7 @@ Route::controller(ReservationController::class)
             ->prefix('{reservation}')
             ->missing(fn () => ErrorController::handleError(route('reservation.view'), ['De reservering die is opgevraagd bestaat niet']))
             ->group(function () {
-                Route::get('/delete', 'delete')->name('reservation.delete.request');
+                Route::post('/delete', 'delete')->name('reservation.delete.request');
                 Route::get('/delete/{delete_token}', 'delete')->name('reservation.delete.confirm');
                 Route::match(['get', 'post'], '/edit', 'edit')->name('reservation.edit');
                 Route::get('/show', 'show')->name('reservation.show');
@@ -96,7 +96,7 @@ Route::controller(OpeningDatetimeController::class)
             ->prefix('{openingDatetime}')
             ->missing(fn () => ErrorController::handleError(route('opening-datetime.view'), ['De openingstijd die is opgevraagd bestaat niet']))
             ->group(function () {
-                Route::get('/delete', 'delete')->name('opening-datetime.delete');
+                Route::post('/delete', 'delete')->name('opening-datetime.delete');
                 Route::match(['get', 'post'], '/edit', 'edit')->name('opening-datetime.edit');
             });
     });
@@ -111,12 +111,9 @@ Route::controller(UserController::class)
             Route::prefix('{user}')
                 ->missing(fn () => ErrorController::handleError(route('manage.users.view'), ['Gebruiker bestaat niet']))
                 ->group(function () {
-                    // Route::get('/create', 'create')->name('manage.users.create');
-                    // Route::post('/create', 'create_store')->name('manage.users.create.store');
                     Route::get('/edit', 'edit')->name('manage.users.edit');
                     Route::post('/edit', 'store')->name('manage.users.edit.store');
-                    Route::get('/delete', 'delete')->name('manage.users.delete');
-                    Route::post('/delete', 'delete_store')->name('manage.users.delete.confirm');
+                    Route::post('/delete', 'delete')->name('manage.users.delete');
                 });
         });
     });

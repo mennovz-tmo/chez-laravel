@@ -73,11 +73,19 @@
                             <hr class="dropdown-divider dropdown-divider-custom" />
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}">uitloggen</a>
+                            <form method="post" action="{{ route('logout') }}" class="dropdown-item p-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-start">uitloggen</button>
+                            </form>
                         </li>
                     </ul>
                 @elseif (Auth::check() && ! is_staff())
-                    <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">uitloggen</a></li>
+                    <li class="nav-item">
+                        <form method="post" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="nav-link border-0 bg-transparent">uitloggen</button>
+                        </form>
+                    </li>
                 @else
                     <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Inloggen</a></li>
                 @endif

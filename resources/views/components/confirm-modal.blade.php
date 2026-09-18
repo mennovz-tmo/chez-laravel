@@ -17,7 +17,10 @@
             </div>
             <div class="modal-footer modal-footer-custom border-0">
                 <button type="button" class="btn btn-outline-dark btn-sm" data-bs-dismiss="modal">Annuleren</button>
-                <a href="{{ $url }}" class="btn btn-dark btn-sm btn-rust">Verwijderen</a>
+                <form method="post" action="{{ $url }}">
+                    @csrf
+                    <button type="submit" class="btn btn-dark btn-sm btn-rust">Verwijderen</button>
+                </form>
             </div>
         </div>
     </div>

@@ -9,10 +9,12 @@
                 reservering te verwijderen. Klik op de link in de e-mail om het verwijderen te bevestigen. De link is 24
                 uur geldig.
             </p>
-            <p>
-                Geen e-mail ontvangen? Vraag de verwijdering
-                <a href="{{ route('reservation.delete.request', $reservation) }}">opnieuw aan</a>. Mocht er toch nog
-                iets zijn kunt u ons altijd bellen op 06 12345678.
+            <p>Geen e-mail ontvangen? Vraag de verwijdering
+            <form method="post" action="{{ route('reservation.delete.request', $reservation) }}" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-link p-0 align-baseline">opnieuw aan</button>
+            </form>
+            . Mocht er toch nog iets zijn kunt u ons altijd bellen op 06 12345678.
             </p>
         </div>
     </div>

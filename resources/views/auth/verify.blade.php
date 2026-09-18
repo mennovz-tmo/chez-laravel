@@ -15,8 +15,12 @@
                     <button type="submit" class="btn btn-primary w-100">Stuur verificatielink opnieuw</button>
                 </form>
                 <div class="mt-4 text-center">
-                    <p class="mb-0">
-                        Verkeerd e-mailadres? <a href="{{ route('logout') }}">Log uit</a> en maak een nieuw account.
+                    <p class="mb-0">Verkeerd e-mailadres?
+                    <form method="post" action="{{ route('logout') }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-link p-0 align-baseline">Log uit</button>
+                    </form>
+                    en maak een nieuw account.
                     </p>
                 </div>
             </div>

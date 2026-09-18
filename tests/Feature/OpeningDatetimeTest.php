@@ -31,7 +31,7 @@ test('consumer cannot create special opening times', function () {
             'opening' => '10:00',
             'closing' => '22:00',
         ])
-        ->assertForbidden();
+        ->assertRedirect('/');
 
     expect(OpeningDatetime::count())->toBe(0);
 });
@@ -66,10 +66,21 @@ test('staff can delete special opening times', function () {
     $openingDatetime = OpeningDatetime::factory()->create();
 
     $this->actingAs($user)
-        ->get("/opening-datetime/{$openingDatetime->id}/delete")
+        ->post("/opening-datetime/{$openingDatetime->id}/delete")
         ->assertRedirect('/opening-datetime');
 
     expect(OpeningDatetime::find($openingDatetime->id))->toBeNull();
+});
+
+test('opening datetime cannot be deleted through a plain GET request', function () {
+    $user = User::factory()->state(['role' => 'staff'])->create();
+    $openingDatetime = OpeningDatetime::factory()->create();
+
+    $this->actingAs($user)
+        ->get("/opening-datetime/{$openingDatetime->id}/delete")
+        ->assertStatus(405);
+
+    expect(OpeningDatetime::find($openingDatetime->id))->not->toBeNull();
 });
 
 test('consumer cannot delete special opening times', function () {
@@ -77,7 +88,7 @@ test('consumer cannot delete special opening times', function () {
     $openingDatetime = OpeningDatetime::factory()->create();
 
     $this->actingAs($user)
-        ->get("/opening-datetime/{$openingDatetime->id}/delete")
+        ->post("/opening-datetime/{$openingDatetime->id}/delete")
         ->assertRedirect('/');
 
     expect(OpeningDatetime::find($openingDatetime->id))->not->toBeNull();

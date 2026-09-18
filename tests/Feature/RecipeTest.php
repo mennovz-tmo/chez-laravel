@@ -52,8 +52,17 @@ test('recipe delete removes record', function () {
     $recipe = Recipe::factory()->create();
     $this->actingAs($user);
 
-    $this->get("/recipe/{$recipe->id}/delete")->assertRedirect('/menu');
+    $this->post("/recipe/{$recipe->id}/delete")->assertRedirect('/menu');
     expect(Recipe::find($recipe->id))->toBeNull();
+});
+
+test('recipe cannot be deleted through a plain GET request', function () {
+    $user = User::factory()->state(['role' => 'staff'])->create();
+    $recipe = Recipe::factory()->create();
+    $this->actingAs($user);
+
+    $this->get("/recipe/{$recipe->id}/delete")->assertStatus(405);
+    expect(Recipe::find($recipe->id))->not->toBeNull();
 });
 
 test('consumer cannot create a recipe', function () {
@@ -87,7 +96,7 @@ test('consumer cannot delete a recipe', function () {
     $recipe = Recipe::factory()->create();
 
     $this->actingAs($user)
-        ->get("/recipe/{$recipe->id}/delete")
+        ->post("/recipe/{$recipe->id}/delete")
         ->assertRedirect('/');
 
     expect(Recipe::find($recipe->id))->not->toBeNull();

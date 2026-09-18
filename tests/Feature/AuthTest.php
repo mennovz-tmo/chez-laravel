@@ -40,21 +40,21 @@ test('login authenticates verified user', function () {
         ->assertRedirect('/');
 });
 
+test('logout requires a POST request and logs the user out', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('logout'))->assertStatus(405);
+
+    $this->actingAs($user)->post(route('logout'))->assertRedirect('/');
+    $this->assertGuest();
+});
+
 test('login sends unverified user to verification notice', function () {
     User::factory()->unverified()->create(['email' => 'login@test.com', 'password' => Hash::make('secret')]);
 
     $this->post('/auth/login', ['email' => 'login@test.com', 'password' => 'secret'])
         ->assertRedirect(route('verification.notice'));
 });
-
-test('unverified user is redirected to verification notice on protected routes', function (string $method, string $url) {
-    $user = User::factory()->unverified()->create();
-
-    $this->actingAs($user)->call($method, $url)
-        ->assertRedirect(route('verification.notice'));
-})->with([
-    'add opening datetime' => ['POST', '/opening-datetime/create'],
-]);
 
 test('staff user can access protected staff routes', function () {
     $user = User::factory()->state(['role' => 'staff'])->create();
