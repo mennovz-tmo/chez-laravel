@@ -8,6 +8,7 @@ use App\Models\OpeningDatetime;
 use App\Models\Reservation;
 use App\Models\WeeklySchedule;
 use DateTime;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -193,9 +194,33 @@ class ReservationController extends Controller
             ->with('end', $request->input('end'));
     }
 
-    public function create(Request $request)
+    private function reservation_attributes(array $validated): array
     {
-        $validator = $request->validate([
+        return [
+            'name' => $validated['name'],
+            'amount_of_people' => $validated['amount_of_people'],
+            'phone_number' => $validated['phone_number'],
+            'email' => $validated['email'],
+            'comment' => $validated['comment'] ?? null,
+            'date' => $validated['date'],
+            'arrival' => $validated['arrival'],
+            'departure' => (new DateTime($validated['arrival']))->modify('+120 minutes'),
+        ];
+    }
+
+    private function validate_reservation(Request $request, ?Reservation $reservation = null): array|RedirectResponse
+    {
+        $is_edit = $reservation !== null;
+
+        $redirect_with_error = function (string $message) use ($reservation) {
+            $redirect = $reservation
+                ? redirect()->route('reservation.edit', compact('reservation'))
+                : redirect()->route('reservation.create');
+
+            return $redirect->withErrors($message)->withInput();
+        };
+
+        $validated = $request->validate([
             'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
             'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
             'phone_number' => ['required', 'numeric'],
@@ -203,92 +228,92 @@ class ReservationController extends Controller
             'comment' => ['nullable', 'string', 'max:1024'],
             'date' => ['required', 'date', 'date_format:Y-m-d'],
             'arrival' => ['required', 'string', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
-        ],
-            [
-                'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
-            ]);
+        ], [
+            'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
+        ]);
 
         $opening_datetime = OpeningDatetime::select(['open', 'opening', 'closing'])
-            ->where('date', '=', $request->input('date'))
-            ->limit(1)
-            ->get();
-        if ($opening_datetime->count() > 0) {
-            $opening_datetime = $opening_datetime[0];
-            if (! $opening_datetime['open']) {
-                return redirect()
-                    ->route('reservation.create')
-                    ->withErrors('De ingevoerde datum zijn wij helaas gesloten.')
-                    ->withInput();
+            ->where('date', $validated['date'])
+            ->first();
+
+        if ($opening_datetime) {
+            if (! $opening_datetime->open) {
+                return $redirect_with_error($is_edit
+                    ? 'De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.'
+                    : 'De ingevoerde datum zijn wij helaas gesloten.');
             }
-            $opening_dt = new DateTime($opening_datetime['opening']);
-            $closing_dt = new DateTime($opening_datetime['closing']);
-            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
+
+            $opening_dt = new DateTime($opening_datetime->opening);
+            $closing_dt = new DateTime($opening_datetime->closing);
+            $requested_dt = DateTime::createFromFormat('H:i', $validated['arrival']);
+
             if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
-                return redirect()
-                    ->route('reservation.create')
-                    ->withErrors("De ingevoerde tijd ligt niet tussen onze speciale openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.")
-                    ->withInput();
+                return $redirect_with_error($is_edit
+                    ? "De nieuwe tijd ligt niet tussen onze speciale openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}."
+                    : "De ingevoerde tijd ligt niet tussen onze speciale openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.");
             }
-        }
-        $requested_day = new DateTime($request->input('date'))->format('N') - 1;
-        $default_schedule = WeeklySchedule::select('is_open', 'opening', 'closing')
-            ->where('day_of_week', '=', $requested_day)
-            ->limit(1)
-            ->get();
-        if ($default_schedule->count() > 0) {
-            $default_schedule = $default_schedule[0];
-            if (! $default_schedule['is_open']) {
-                return redirect()
-                    ->route('reservation.create')
-                    ->withErrors('De ingevoerde datum zijn wij helaas gesloten.')
-                    ->withInput();
-            }
-            $opening_dt = new DateTime($default_schedule['opening']);
-            $closing_dt = new DateTime($default_schedule['closing']);
-            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
-            if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
-                return redirect()
-                    ->route('reservation.create')
-                    ->withErrors("De ingevoerde tijd ligt niet tussen onze openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.")
-                    ->withInput();
+        } else {
+            $requested_day = (new DateTime($validated['date']))->format('N') - 1;
+            $default_schedule = WeeklySchedule::select('is_open', 'opening', 'closing')
+                ->where('day_of_week', $requested_day)
+                ->first();
+
+            if ($default_schedule) {
+                if (! $default_schedule->is_open) {
+                    return $redirect_with_error($is_edit
+                        ? 'De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.'
+                        : 'De ingevoerde datum zijn wij helaas gesloten.');
+                }
+
+                $opening_dt = new DateTime($default_schedule->opening);
+                $closing_dt = new DateTime($default_schedule->closing);
+                $requested_dt = DateTime::createFromFormat('H:i', $validated['arrival']);
+
+                if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
+                    return $redirect_with_error($is_edit
+                        ? "De nieuwe tijd ligt niet tussen onze openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}."
+                        : "De ingevoerde tijd ligt niet tussen onze openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.");
+                }
             }
         }
 
-        $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+1 day')->format('Y-m-d'));
-        $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+61 day')->format('Y-m-d'));
-        $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
-        if ($current_date > $select_date) {
-            return redirect()
-                ->route('reservation.create')
-                ->withErrors('Voor de ingevoerde datum kan je niet meer reserveren. Je moet ten minste 1 dag van te voren reserveren.')
-                ->withInput();
-        }
-        if ($future_date < $select_date) {
-            return redirect()
-                ->route('reservation.create')
-                ->withErrors('Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.')
-                ->withInput();
+        $current_date = now()->addDay()->format('Y-m-d');
+        $future_date = now()->addDays(61)->format('Y-m-d');
+
+        if ($current_date > $validated['date']) {
+            return $redirect_with_error($is_edit
+                ? 'Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.'
+                : 'Voor de ingevoerde datum kan je niet meer reserveren. Je moet ten minste 1 dag van te voren reserveren.');
         }
 
-        $chairs_used = Reservation::where('date', '=', $request->input('date'))->sum('amount_of_people');
-        if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
-            // $tmp = $chairs_used - $request->input('amount_of_people');
-            return redirect()
-                ->route('reservation.create')
-                ->withErrors('De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!')
-                ->withInput();
+        if ($future_date < $validated['date']) {
+            return $redirect_with_error($is_edit
+                ? 'Voor de ingevoerde datum kan je de reservering nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.'
+                : 'Voor de ingevoerde datum kan je nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.');
         }
 
-        $reservation = Reservation::create([
-            'name' => $request->input('name'),
-            'amount_of_people' => $request->input('amount_of_people'),
-            'phone_number' => $request->input('phone_number'),
-            'email' => $request->input('email'),
-            'comment' => $request->input('comment'),
-            'date' => $request->input('date'),
-            'arrival' => $request->input('arrival'),
-            'departure' => new DateTime($request->input('arrival'))->modify('+120 minutes'),
-        ]);
+        $chairs_used = Reservation::where('date', $validated['date'])
+            ->when($reservation, fn ($query) => $query->where('id', '!=', $reservation->id))
+            ->sum('amount_of_people');
+
+        if (Config::get('app.seats') - ($chairs_used + $validated['amount_of_people']) < 0) {
+            return $redirect_with_error($is_edit
+                ? 'De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!'
+                : 'De reservering is niet gelukt, helaas hebben we deze dag geen stoelen meer!');
+        }
+
+        return $validated;
+    }
+
+    public function create(Request $request)
+    {
+        $validated = $this->validate_reservation($request);
+
+        if ($validated instanceof RedirectResponse) {
+            return $validated;
+        }
+
+        $reservation = Reservation::create($this->reservation_attributes($validated));
 
         Mail::to($reservation->email)->send(new ReservationCreated($reservation));
 
@@ -304,99 +329,13 @@ class ReservationController extends Controller
                 ->with('current_data', $reservation);
         }
 
-        $validator = $request->validate([
-            'name' => ['bail', 'required', 'string', 'min:1', 'max:255'],
-            'amount_of_people' => ['required', 'numeric', 'min:1', 'max:10'],
-            'phone_number' => ['required', 'numeric'],
-            'email' => ['required', 'email'],
-            'comment' => ['nullable', 'string', 'max:1024'],
-            'date' => ['required', 'date', 'date_format:Y-m-d'],
-            'arrival' => ['required', 'string', 'regex:((2[0-3]|[01][1-9]|10):([0-5][0-9]))'],
-        ],
-            [
-                'amount_of_people.max' => 'U kan niet via de form reserveren voor een groep van meer dan 10, bel het restaurant voor mogelijkheden',
-            ]);
+        $validated = $this->validate_reservation($request, $reservation);
 
-        $opening_datetime = OpeningDatetime::select(['open', 'opening', 'closing'])
-            ->where('date', '=', $request->input('date'))
-            ->limit(1)
-            ->get();
-        if ($opening_datetime->count() > 0) {
-            $opening_datetime = $opening_datetime[0];
-            if (! $opening_datetime['open']) {
-                return redirect()
-                    ->route('reservation.edit', compact('reservation'))
-                    ->withErrors('De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.')
-                    ->withInput();
-            }
-            $opening_dt = new DateTime($opening_datetime['opening']);
-            $closing_dt = new DateTime($opening_datetime['closing']);
-            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
-            if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
-                return redirect()
-                    ->route('reservation.edit', compact('reservation'))
-                    ->withErrors("De nieuwe tijd ligt niet tussen onze speciale openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.")
-                    ->withInput();
-            }
-        }
-        $requested_day = new DateTime($request->input('date'))->format('N') - 1;
-        $default_schedule = WeeklySchedule::select('is_open', 'opening', 'closing')
-            ->where('day_of_week', '=', $requested_day)
-            ->limit(1)
-            ->get();
-        if ($default_schedule->count() > 0) {
-            $default_schedule = $default_schedule[0];
-            if (! $default_schedule['is_open']) {
-                return redirect()
-                    ->route('reservation.edit', compact('reservation'))
-                    ->withErrors('De aanpassing is niet gelukt, de nieuwe datum zijn wij helaas gesloten.')
-                    ->withInput();
-            }
-            $opening_dt = new DateTime($default_schedule['opening']);
-            $closing_dt = new DateTime($default_schedule['closing']);
-            $requested_dt = DateTime::createFromFormat('H:i', $request->input('arrival'));
-            if ($requested_dt < $opening_dt || $requested_dt > $closing_dt) {
-                return redirect()
-                    ->route('reservation.edit', compact('reservation'))
-                    ->withErrors("De nieuwe tijd ligt niet tussen onze openingstijden: {$opening_dt->format('H:i')} en {$closing_dt->format('H:i')}.")
-                    ->withInput();
-            }
+        if ($validated instanceof RedirectResponse) {
+            return $validated;
         }
 
-        $current_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+24 hours')->format('Y-m-d'));
-        $future_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->modify('+61 day')->format('Y-m-d'));
-        $select_date = new DateTime()->createFromFormat('Y-m-d', new DateTime()->createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'));
-        if ($current_date > $select_date) {
-            return redirect()
-                ->route('reservation.edit', compact('reservation'))
-                ->withErrors('Voor de ingevoerde datum kan je niet meer je reservering aanpassen. Je moet ten minste 1 dag van te voren aanpassingen maken.')
-                ->withInput();
-        }
-        if ($future_date < $select_date) {
-            return redirect()
-                ->route('reservation.edit', compact('reservation'))
-                ->withErrors('Voor de ingevoerde datum kan je de reservering nog niet reserveren. Je kan maximaal 60 dagen van te voren reserveren.')
-                ->withInput();
-        }
-
-        $chairs_used = Reservation::where('date', '=', $reservation->date)->where('id', '!=', $reservation->id)->sum('amount_of_people') ?? 0;
-        if (Config::get('app.seats') - ($chairs_used + $request->input('amount_of_people')) < 0) {
-            return redirect()
-                ->route('reservation.edit', compact('reservation'))
-                ->withErrors('De aanpassing is niet gelukt, helaas hebben we niet genoeg stoelen voor de aanpassing!')
-                ->withInput();
-        }
-
-        $reservation->update([
-            'name' => $request->input('name'),
-            'amount_of_people' => $request->input('amount_of_people'),
-            'phone_number' => $request->input('phone_number'),
-            'email' => $request->input('email'),
-            'comment' => $request->input('comment'),
-            'date' => $request->input('date'),
-            'arrival' => $request->input('arrival'),
-            'departure' => new DateTime($request->input('arrival'))->modify('+120 minutes'),
-        ]);
+        $reservation->update($this->reservation_attributes($validated));
 
         Mail::to($reservation->email)->send(new ReservationCreated($reservation));
 
