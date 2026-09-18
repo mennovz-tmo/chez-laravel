@@ -24,7 +24,7 @@
                             </div>
                         @endif
                         <div class="card-body d-flex flex-column">
-                            <h3 class="card-title h4 card-title">{!! $recipe->name !!}</h3>
+                            <h3 class="card-title h4 card-title">{{ $recipe->name }}</h3>
                             <p class="card-text card-text-muted">{{ $recipe->description_short }}</p>
                             <p class="text-small-rust mb-2">Allergenen: {{ $recipe->allergens }}</p>
                             <div class="d-flex justify-content-between align-items-center mt-auto pt-3">

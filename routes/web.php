@@ -40,7 +40,7 @@ Route::middleware('auth')
 
 Route::controller(RecipeController::class)
     ->prefix('recipe')
-    ->middleware(['auth', 'verified'])
+    ->middleware(StaffMiddleware::class)
     ->group(function () {
         Route::get('/', 'index')->name('recipe.create');
         Route::post('/create', 'create')->name('recipe.store');
@@ -89,10 +89,10 @@ Route::controller(OpeningDatetimeController::class)
     ->prefix('opening-datetime')
     ->group(function () {
         Route::get('/', 'index')->name('opening-datetime.view');
-        Route::post('/create', 'create')->name('opening-datetime.create')->middleware(['auth', 'verified']);
+        Route::post('/create', 'create')->name('opening-datetime.create')->middleware(StaffMiddleware::class);
 
         Route::controller(OpeningDatetimeController::class)
-            ->middleware(['auth', 'verified'])
+            ->middleware(StaffMiddleware::class)
             ->prefix('{openingDatetime}')
             ->missing(fn () => ErrorController::handleError(route('opening-datetime.view'), ['De openingstijd die is opgevraagd bestaat niet']))
             ->group(function () {

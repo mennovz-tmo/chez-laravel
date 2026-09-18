@@ -28,6 +28,15 @@ class Reservation extends Model
     }
 
     /**
+     * Route model binding uses the unguessable reservation number so that
+     * sequential, enumerable ids are never exposed in URLs.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'number';
+    }
+
+    /**
      * Generate a new delete token, store only its hash + expiry, and
      * return the plaintext token so it can be e-mailed.
      */

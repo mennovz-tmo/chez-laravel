@@ -13,6 +13,6 @@
         @yield('content')
     </main>
 
-    <footer class="footer-text mt-auto py-4 text-center">&copy; Chez Laravel Est. 1974</footer>
+    @include('components.footer')
 </body>
 </html>

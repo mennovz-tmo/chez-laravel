@@ -43,6 +43,11 @@ class UserController extends Controller
 
     public function delete(User $user)
     {
+        if ($user->role == 'owner') {
+            return redirect()->route('manage.users.view')
+                ->with('error', 'Dit account kan niet worden verwijderd omdat het een super admin is.');
+        }
+
         $user->delete();
 
         return redirect()->route('manage.users.view')

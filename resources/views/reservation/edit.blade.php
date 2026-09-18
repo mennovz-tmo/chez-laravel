@@ -12,7 +12,7 @@
         <div class="col-lg-8">
             <h1 class="display-5 section-title mb-4">Reserveren</h1>
             <form
-                action="{{ route('reservation.edit', ['reservation' => $current_data['id']]) }}"
+                action="{{ route('reservation.edit', $current_data) }}"
                 method="post"
                 class="card card-body-container p-4 shadow-sm"
             >

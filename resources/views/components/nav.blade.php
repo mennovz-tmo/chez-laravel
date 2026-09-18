@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg border-0 bg-transparent py-3">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ route('welcome') }}">Chez Laravel</a>
+        <a class="navbar-brand" href="{{ route('welcome') }}">{{ env('APP_NAME') }}</a>
         <button
             class="navbar-toggler border-0"
             type="button"
@@ -73,7 +73,7 @@
                             <hr class="dropdown-divider dropdown-divider-custom" />
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}"> uitloggen </a>
+                            <a class="dropdown-item" href="{{ route('logout') }}">uitloggen</a>
                         </li>
                     </ul>
                 @elseif (Auth::check() && ! is_staff())

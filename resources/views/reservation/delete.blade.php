@@ -11,7 +11,7 @@
             </p>
             <p>
                 Geen e-mail ontvangen? Vraag de verwijdering
-                <a href="{{ route('reservation.delete.request', $reservation->id) }}">opnieuw aan</a>. Mocht er toch nog
+                <a href="{{ route('reservation.delete.request', $reservation) }}">opnieuw aan</a>. Mocht er toch nog
                 iets zijn kunt u ons altijd bellen op 06 12345678.
             </p>
         </div>

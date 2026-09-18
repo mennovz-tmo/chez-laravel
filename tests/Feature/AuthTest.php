@@ -53,12 +53,11 @@ test('unverified user is redirected to verification notice on protected routes',
     $this->actingAs($user)->call($method, $url)
         ->assertRedirect(route('verification.notice'));
 })->with([
-    'recipe index' => ['GET', '/recipe'],
     'add opening datetime' => ['POST', '/opening-datetime/create'],
 ]);
 
-test('verified user can access protected routes', function () {
-    $user = User::factory()->create();
+test('staff user can access protected staff routes', function () {
+    $user = User::factory()->state(['role' => 'staff'])->create();
 
     $this->actingAs($user)->get('/recipe')->assertOk();
 });

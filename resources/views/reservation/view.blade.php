@@ -111,13 +111,13 @@
                                             >
                                                 Verwijder
                                             </button>
-                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt permanent verwijderd.'])
+                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation), 'message' => 'Deze reservering wordt permanent verwijderd.'])
                                             <a
-                                                href="{{ route('reservation.show', $reservation->id) }}"
+                                                href="{{ route('reservation.show', $reservation) }}"
                                                 class="btn btn-outline-dark btn-sm mt-1"
                                             >Bekijk</a>
                                             <a
-                                                href="{{ route('reservation.edit', $reservation->id) }}"
+                                                href="{{ route('reservation.edit', $reservation) }}"
                                                 class="btn btn-outline-dark btn-sm mt-1"
                                             >Bewerk</a>
                                         @else
@@ -129,13 +129,13 @@
                                             >
                                                 Annuleer
                                             </button>
-                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation->id), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
+                                            @include('components.confirm-modal', ['uid' => 'res-'.$reservation->id, 'url' => route('reservation.delete.request', $reservation), 'message' => 'Deze reservering wordt verwijderd na een korte verificatie.'])
                                             <a
-                                                href="{{ route('reservation.show', $reservation->id) }}"
+                                                href="{{ route('reservation.show', $reservation) }}"
                                                 class="btn btn-outline-dark btn-sm"
                                             >Bekijk</a>
                                             <a
-                                                href="{{ route('reservation.pdf', $reservation->id) }}"
+                                                href="{{ route('reservation.pdf', $reservation) }}"
                                                 target="_blank"
                                                 class="btn btn-outline-dark btn-sm mt-2"
                                             >Download pdf</a>

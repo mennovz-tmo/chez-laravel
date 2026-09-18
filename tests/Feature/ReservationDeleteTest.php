@@ -22,7 +22,7 @@ test('guest delete request sends verification email and keeps reservation', func
 
     $reservation = deletableReservation();
 
-    $response = $this->get("/reservation/{$reservation->id}/delete");
+    $response = $this->get("/reservation/{$reservation->number}/delete");
 
     $response->assertOk();
     $response->assertViewIs('reservation.delete');
@@ -35,7 +35,7 @@ test('guest confirms deletion with valid token from email', function () {
     Mail::fake();
 
     $reservation = deletableReservation();
-    $this->get("/reservation/{$reservation->id}/delete");
+    $this->get("/reservation/{$reservation->number}/delete");
 
     $plainToken = null;
     Mail::assertSent(ReservationDeleteRequested::class, function ($mail) use (&$plainToken, $reservation) {
@@ -52,7 +52,7 @@ test('guest confirms deletion with valid token from email', function () {
     // Only the hash may be stored, never the plaintext token.
     expect($reservation->fresh()->delete_token)->toBe(hash('sha256', $plainToken));
 
-    $response = $this->get("/reservation/{$reservation->id}/delete/{$plainToken}");
+    $response = $this->get("/reservation/{$reservation->number}/delete/{$plainToken}");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->toBeNull();
@@ -62,7 +62,7 @@ test('guest cannot delete with invalid token', function () {
     $reservation = deletableReservation();
     $reservation->generate_delete_token();
 
-    $response = $this->get("/reservation/{$reservation->id}/delete/invalid-token");
+    $response = $this->get("/reservation/{$reservation->number}/delete/invalid-token");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->not->toBeNull();
@@ -73,7 +73,7 @@ test('expired token does not delete and is cleared', function () {
     $plainToken = $reservation->generate_delete_token();
     $reservation->forceFill(['delete_token_expires_at' => now()->subHour()])->save();
 
-    $response = $this->get("/reservation/{$reservation->id}/delete/{$plainToken}");
+    $response = $this->get("/reservation/{$reservation->number}/delete/{$plainToken}");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->not->toBeNull();
@@ -86,7 +86,7 @@ test('staff user deletes immediately without email', function () {
     $user = User::factory()->create(['role' => 'staff']);
     $reservation = deletableReservation();
 
-    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->number}/delete");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->toBeNull();
@@ -99,7 +99,7 @@ test('verified user with matching email deletes immediately without email', func
     $user = User::factory()->create(['email' => 'test@example.com']);
     $reservation = deletableReservation(['email' => 'test@example.com']);
 
-    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->number}/delete");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->toBeNull();
@@ -112,7 +112,7 @@ test('unverified user with matching email does not delete directly', function ()
     $user = User::factory()->unverified()->create(['email' => 'test@example.com']);
     $reservation = deletableReservation(['email' => 'test@example.com']);
 
-    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->number}/delete");
 
     $response->assertOk();
     $response->assertViewIs('reservation.delete');
@@ -126,7 +126,7 @@ test('verified user with non-matching email does not delete directly', function 
     $user = User::factory()->create(['email' => 'other@example.com']);
     $reservation = deletableReservation(['email' => 'test@example.com']);
 
-    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->number}/delete");
 
     $response->assertOk();
     $response->assertViewIs('reservation.delete');
@@ -142,7 +142,7 @@ test('verified user with matching email cannot delete within 12 hours of reserva
         'arrival' => now()->addHours(2)->format('H:i'),
     ]);
 
-    $response = $this->actingAs($user)->get("/reservation/{$reservation->id}/delete");
+    $response = $this->actingAs($user)->get("/reservation/{$reservation->number}/delete");
 
     $response->assertRedirect('/reservation');
     expect(Reservation::find($reservation->id))->not->toBeNull();

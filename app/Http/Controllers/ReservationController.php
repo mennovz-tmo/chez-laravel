@@ -123,23 +123,14 @@ class ReservationController extends Controller
 
     public function view(Request $request)
     {
+        $isConsumer = Auth::check() && ! is_staff();
+
         $query = Reservation::query();
 
-        if (Auth::check() && is_staff() && ! $this->is_any_input_filled($request, ['email', 'end', 'start', 'name'])) {
-            return view('reservation.view')
-                ->with('reservations', $query
-                    ->orderByDesc('date')
-                    ->orderByDesc('arrival')
-                    ->get());
-        }
-
-        if (Auth::check() && ! is_staff() && ! $this->is_any_input_filled($request, ['email', 'end', 'start', 'name'])) {
-            return view('reservation.view')
-                ->with('reservations', $query
-                    ->where('email', '=', Auth::user()->email)
-                    ->orderByDesc('date')
-                    ->orderByDesc('arrival')
-                    ->get());
+        // Non-staff accounts may only ever find their own reservations,
+        // regardless of the search filters they supply.
+        if ($isConsumer) {
+            $query->where('email', Auth::user()->email);
         }
 
         $validated = $request->validate([
@@ -176,7 +167,7 @@ class ReservationController extends Controller
             }
         }
 
-        if ($request->filled('email')) {
+        if ($request->filled('email') && ! $isConsumer) {
             $query->where('email', $validated['email']);
         }
 

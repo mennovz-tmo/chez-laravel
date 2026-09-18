@@ -110,9 +110,86 @@ test('reservation pdf is downloaded', function () {
 
     $reservation = Reservation::factory()->create();
 
-    $this->get("/reservation/{$reservation->id}/pdf")->assertOk();
+    $this->get("/reservation/{$reservation->number}/pdf")->assertOk();
 
     Pdf::assertRespondedWithPdf(fn ($pdf) => $pdf->isDownload()
         && $pdf->viewName === 'pdf.reservation'
         && $pdf->downloadName === "reservation_{$reservation->number}.pdf");
+});
+
+test('reservation is not accessible through its sequential id', function () {
+    $reservation = Reservation::factory()->create();
+
+    $this->get("/reservation/{$reservation->id}/show")
+        ->assertRedirect('/reservation');
+});
+
+test('guest cannot edit another guests reservation', function () {
+    $reservation = Reservation::factory()->create();
+
+    $this->get("/reservation/{$reservation->number}/edit")->assertForbidden();
+    $this->post("/reservation/{$reservation->number}/edit", [])->assertForbidden();
+});
+
+test('consumer cannot edit a reservation belonging to another email', function () {
+    $user = User::factory()->create(['email' => 'consumer@example.com']);
+    $reservation = Reservation::factory()->create(['email' => 'other@example.com']);
+
+    $this->actingAs($user)
+        ->get("/reservation/{$reservation->number}/edit")
+        ->assertForbidden();
+});
+
+test('owner with matching email can edit their own reservation', function () {
+    $user = User::factory()->create(['email' => 'owner@example.com']);
+    $reservation = Reservation::factory()->create(['email' => 'owner@example.com']);
+
+    $this->actingAs($user)
+        ->get("/reservation/{$reservation->number}/edit")
+        ->assertOk();
+});
+
+test('owner with matching email can update their own reservation', function () {
+    Config::set('app.seats', 50);
+    Mail::fake();
+
+    $date = now()->addDays(5)->format('Y-m-d');
+
+    WeeklySchedule::factory()->create([
+        'day_of_week' => now()->addDays(5)->format('N') - 1,
+        'opening' => '16:00',
+        'closing' => '22:00',
+    ]);
+
+    $user = User::factory()->create(['email' => 'owner@example.com']);
+    $reservation = Reservation::factory()->create([
+        'email' => 'owner@example.com',
+        'date' => $date,
+    ]);
+
+    $this->actingAs($user)
+        ->post("/reservation/{$reservation->number}/edit", [
+            'name' => 'Updated Name',
+            'amount_of_people' => 2,
+            'phone_number' => '0612345678',
+            'email' => 'owner@example.com',
+            'date' => $date,
+            'arrival' => '18:00',
+        ])
+        ->assertRedirect(route('reservation.show', $reservation));
+
+    expect($reservation->fresh()->name)->toBe('Updated Name');
+    Mail::assertSent(ReservationCreated::class);
+});
+
+test('consumer search cannot surface another guests reservations', function () {
+    $user = User::factory()->create(['email' => 'consumer@example.com']);
+    Reservation::factory()->create(['email' => 'consumer@example.com', 'name' => 'MyOwnName']);
+    Reservation::factory()->create(['email' => 'other@example.com', 'name' => 'SomeoneElsesName']);
+
+    $this->actingAs($user)
+        ->post('/reservation', ['email' => 'other@example.com'])
+        ->assertOk()
+        ->assertSee('MyOwnName')
+        ->assertDontSee('SomeoneElsesName');
 });
